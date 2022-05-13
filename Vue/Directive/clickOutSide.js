@@ -1,0 +1,3 @@
+const clickOutSide = {
+  bind() {}
+}
