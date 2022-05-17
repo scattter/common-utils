@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<p>...content before script...</p>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => alert("DOM ready after defer!"));
+</script>
+<script defer src="https://javascript.info/article/script-async-defer/long.js?speed=1"></script>
+
+<!-- 立即可见 -->
+<p>...content after script...</p>
+<script>
+  // defer 特性告诉浏览器不要等待脚本。相反，浏览器将继续处理 HTML，构建 DOM。脚本会“在后台”下载，然后等 DOM 构建完成后，脚本才会执行。
+  // 换句话说：
+  // 具有 defer 特性的脚本不会阻塞页面。
+  // 具有 defer 特性的脚本总是要等到 DOM 解析完毕，但在 DOMContentLoaded 事件之前执行。
+  // 具有 defer 特性的脚本保持其相对顺序，就像常规脚本一样。
+  // 即使两个脚本都是带有defer属性, 且下载完成的先后和代码中的先后不一样, 但是运行顺序依然遵循代码中的顺序运行
+
+  // defer 特性仅适用于外部脚本
+  // 如果 <script> 脚本没有 src，则会忽略 defer 特性
+</script>
+</body>
+</html>
