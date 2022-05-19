@@ -5,7 +5,7 @@
 // 记忆其词法环境, 并更新此法环境
 
 // 普通闭包
-function sum(arr) {
+function sum() {
   let count = 0
   return function() {
     return count++
@@ -48,3 +48,20 @@ const pow2 = make_pow(2)
 const pow3 = make_pow(3)
 console.log(pow2(2))
 console.log(pow3(3))
+
+
+// 使用闭包实现函数柯里化add(1)(2)(3) = 6
+function add(x) {
+  let sum = x
+  let temp = function(y) {
+    sum += y
+    return temp
+  }
+  temp.toString = function () {
+    return sum
+  }
+  return temp
+}
+
+console.log(add(1)(2)(3).toString())
+console.log(add(1)(2)(3)(4).toString())
