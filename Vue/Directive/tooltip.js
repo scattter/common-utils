@@ -27,7 +27,7 @@ Vue.directive('tool', {
     }
     
     el.addEventListener('mouseenter', function(e) {
-      if (el.scrollWidth > el.offsetWidth) {
+      if (el.scrollWidth > el.offsetWidth || el.scrollHeight > el.offsetHeight) {
         const tip = tooltip.$refs.tooltip;
         // 每次建新的tooltip的时候销毁前一个, 防止速度过快出现闪烁
         tip.$refs.popper && (tip.$refs.popper.style.display = 'none');
