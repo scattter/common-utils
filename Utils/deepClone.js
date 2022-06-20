@@ -1,4 +1,7 @@
 const myClone = (target) => {
+  // handle date and regexp
+  if (target instanceof Date) return new Date(target);
+  if (target instanceof RegExp) return new RegExp(target);
   if (typeof target === 'object' && target !== null) {
     const targetClone = Array.isArray(target) ? [] : {}
     for (let key in target) {
