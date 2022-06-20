@@ -65,3 +65,40 @@ function add(x) {
 
 console.log(add(1)(2)(3).toString())
 console.log(add(1)(2)(3)(4).toString())
+
+// 类相关示例
+class Calculator {
+  constructor(num) {
+    this.num = num
+    this.isFirstCal = true
+  }
+
+  add(value) {
+    this.destroy()
+    this.num += value
+    return this
+  }
+
+  substract(value) {
+    this.destroy()
+    this.num -= value
+    return this
+  }
+
+  result() {
+    console.log(this.num)
+    this.isFirstCal = false
+  }
+
+  destroy() {
+    if (!this.isFirstCal) throw new Error()
+  }
+}
+
+const cal = new Calculator(50)
+cal.add(10).substract(1000).add(1).substract(100).result()
+try {
+  cal.add(10)
+} catch (e) {
+  console.log('exception!')
+}
