@@ -1,3 +1,4 @@
+// 观察者模式
 export class Observe {
   constructor(name, subject) {
     this.name = name
