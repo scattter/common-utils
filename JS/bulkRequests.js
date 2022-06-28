@@ -47,22 +47,20 @@ function sendRequest(urls, max, callback) {
   // 主要处理缓存请求队列的问题
   async function request(index, url) {
     // 如果当前请求数量大于批量请求数量
-    // 就将其添加到缓存队列
-    // TODO 为什么这里会将剩余的请求全部塞进数组里面? 因为事件循环?
+    // 就将其添加到缓存队列 阻塞后面的handleReq
     if (currentReqNum >= max) {
       // pending状态的promise
-      console.log('****')
       await new Promise((resolve) => {
-        console.log(index, '====')
         bulkQueue.push(resolve)
       })
     }
+    console.log('3')
+    // 这里由于上面的await, 所以被阻塞了  存入了一个队列中
     handleReq(index, url)
   }
 
   // 结束一个旧的请求 再开始一个新的请求
   async function handleReq(index, url) {
-    console.log(bulkQueue.length, index)
     // 当前请求数 + 1
     currentReqNum++
     // 等待当前请求结束
@@ -74,10 +72,12 @@ function sendRequest(urls, max, callback) {
       currentReqNum--
       finishReqNum++
       // 上一个请求结束 那就发送新的请求
-      // 由于在上一步我们将其pending了 所以要放开 使得for循环正常向下进行
       // 然后再将这个新的请求从队列里面移除出去
       if (bulkQueue.length) {
+        console.log('1')
+        // 这里执行resolve 触发新的handleReq
         bulkQueue[0]()
+        console.log('2')
         bulkQueue.shift()
       }
       // 如果所有的都处理完了 那么调用回调函数
@@ -91,3 +91,34 @@ function sendRequest(urls, max, callback) {
 }
 
 sendRequest(allRequest, 3, results => console.log(results))
+
+// 另一种实现方式
+// https://zhuanlan.zhihu.com/p/360193435
+async function parallel(jobs, fn, workerCount = 5) {
+  const ret = new Array(jobs.length);
+
+  let cursor = 0;
+  async function worker(workerId) {
+    let currentJob;
+    while (cursor < jobs.length) {
+      try {
+        currentJob = cursor;
+        cursor += 1;
+        ret[currentJob] = await fn(jobs[currentJob]);
+      } catch (e) {
+        console.log(`worker: ${workerId} job: ${currentJob}`, e);
+      }
+    }
+  }
+
+  const workers = [];
+
+  for (let i = 0; i < workerCount && i < jobs.length; i += 1) {
+    workers.push(worker(i));
+  }
+
+  await Promise.all(workers);
+
+  return ret;
+}
+const results = await parallel(allRequest, (url) => fetch(url), 5)
