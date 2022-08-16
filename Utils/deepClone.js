@@ -17,3 +17,25 @@ const myClone = (target) => {
 let arr1 = [ 1, 2, { val: 4, xdm: { dd: 99 } } , {'hasOwnProperty': 3}];
 let str = myClone(arr1)
 console.log(str)
+
+// 另一种深拷贝
+const deepCopy = (data, hash = new WeakMap()) => {
+  if (!data) return data
+
+  if (data instanceof Date) return new Date(data)
+
+  if (data instanceof RegExp) return new RegExp(data)
+
+  if (typeof data !== 'object') return data
+
+  if (hash.get(data)) return hash.get(data)
+
+  let cloneObj = new data.constructor()
+  hash.set(data, cloneObj)
+  for (let key in data) {
+    if (obj.hasOwnProperty(key)) {
+      cloneObj[key] = deepCopy(data[key], hash)
+    }
+  }
+  return cloneObj
+}
