@@ -102,3 +102,26 @@ try {
 } catch (e) {
   console.log('exception!')
 }
+
+// 闭包实例
+function foo(...numbers) {
+  return numbers.reduce((res, cur) => res * cur, 1)
+}
+const a = foo(1,2 ,3 ,4)
+console.log(a)
+
+
+const map = {}
+function fooPro(...numbers) {
+  return function() {
+    numbers.sort()
+    const flag = numbers.join('')
+    if (map[flag]) return map[flag]
+    const res = numbers.reduce((res, cur) => res * cur, 1)
+    map[flag] = res
+    return res
+  }
+}
+const b = fooPro(1, 2, 3, 4, 5)()
+const c = fooPro(5, 4, 3, 2, 1)()
+console.log(b, c)
