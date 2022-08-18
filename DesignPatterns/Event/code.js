@@ -10,7 +10,7 @@ class Event {
   on(eventName, cb) {
     // 添加事件与回调
     const cbs = (this._cache[eventName] = this._cache[eventName] || [])
-    if (cbs.indexOf(eventName) === -1) {
+    if (cbs.indexOf(cb) === -1) {
       cbs.push(cb)
     }
     return this
