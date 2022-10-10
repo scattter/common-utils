@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #left {
+      float: left;
+      width: 100px;
+      height: 100px;
+      background-color: cornflowerblue;
+    }
+    #right {
+      float: right;
+      width: 100px;
+      height: 100px;
+      background-color: orange;
+    }
+    #center {
+      /*float: left;*/
+      /*width: 200px;*/
+      height: 100px;
+      overflow: hidden;
+      background-color: red;
+    }
+    #parent {
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+<div id="parent">
+  <div id="center">中间</div>
+  <div id="left">左边</div>
+  <div id="right">右边</div>
+</div>
+</body>
+<!--<body>-->
+<!--<div class="container">-->
+<!--  <div class="left"></div>-->
+<!--  <div class="right"></div>-->
+<!--  <div class="main"></div>-->
+<!--</div>-->
+<!--</body>-->
+<style>
+  .container{
+    height: 400px;
+  }
+  .container > div{
+    height: 100%;
+  }
+  .left{
+    float: left;
+    width: 300px;
+    background-color: beige;
+  }
+  .right{
+    float: right;
+    width: 100px;
+    background-color:grey;
+  }
+  .main{
+    overflow: hidden;
+    background-color: indianred;
+  }
+</style>
+</html>

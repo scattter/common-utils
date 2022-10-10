@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .drag {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .rect {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      top: 0;
+    }
+    .slot {
+      left: 0;
+      border: 2px solid black
+    }
+    .block {
+      right: 0;
+      background-color: orange;
+    }
+  </style>
+</head>
+<body>
+<div class="drag">
+  <div class="slot rect"></div>
+  <div class="block rect"></div>
+</div>
+<script>
+  // 控制移动
+  function handleDrag(event) {
+    // 鼠标和拖拽元素左上角的位移量
+    const { left: mouseLeft, top: mouseTop } = event.target.getBoundingClientRect();
+    const shiftX = event.clientX - mouseLeft;
+    const shiftY = event.clientY - mouseTop;
+    
+    function moveAt(pageX, pageY) {
+      event.target.style.left = pageX - shiftX + 'px';
+      event.target.style.top = pageY - shiftY + 'px';
+    }
+    function onMouseMove(event) {
+      handleOverlap(slot, block, changeSlotStyle)
+      moveAt(event.pageX, event.pageY);
+    }
+    // 组合监听, 实现拖拽
+    document.addEventListener('mousemove', onMouseMove);
+    // 监听鼠标松开
+    document.addEventListener('mouseup', () => {
+      // 移除鼠标移动监听事件
+      document.removeEventListener('mousemove', onMouseMove);
+      event.target.onMouseUp = null;
+    });
+  }
+  // 处理重叠
+  function handleOverlap(source, target, cb) {
+    const { left: leftTarget, top: topTarget } = target.getBoundingClientRect()
+    const { width: widthSource } = source.getClientRects()[0]
+    const { left: leftSource, top: topSource } = source.getBoundingClientRect()
+    
+    // 判断是否有重叠
+    const noOverlap = (val1, val2, count) => {
+      return (Math.max(val1, val2) - Math.min(val1, val2)) > count
+    }
+    // 必须两个都不满足的时候才有重叠, 然后调用回调
+    cb(!noOverlap(leftSource, leftTarget, widthSource - 1) && !noOverlap(topTarget, topSource, widthSource - 1))
+  }
+  // 重叠后具体操作
+  const changeSlotStyle = (flag) => {
+    slot.style.borderColor = flag ? 'red' : 'black'
+  }
+  
+  
+  const slot = document.getElementsByClassName('slot').item(0)
+  const block = document.getElementsByClassName('block').item(0)
+  slot.addEventListener('mousedown', handleDrag)
+  block.addEventListener('mousedown', handleDrag)
+</script>
+</body>
+</html>

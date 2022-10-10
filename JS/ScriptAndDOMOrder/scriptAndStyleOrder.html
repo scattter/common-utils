@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <script>
+    setInterval(() => {
+      console.log('script')
+    }, 500)
+  </script>
+  <link href="https://cdn.bootcss.com/bootstrap/4.0.0-alpha.6/css/bootstrap.css" rel="stylesheet">
+  <style>
+    .demo {
+      height: 200px !important;
+      background-color: cornflowerblue;
+    }
+  </style>
+</head>
+<body>
+<div class="demo">this is a div</div>
+<a style="display: inline-block; height: 100px; width: 100px; background-color: black" href=""></a>
+<!--同等优先级, 越接近dom元素, style的优先级越高, 但是如果header里面加important, 那么以header里面的为基准-->
+<style>
+  .demo {
+    width: 100px;
+    height: 100px;
+    background-color: red;
+  }
+</style>
+<script>
+  // 由于上面header里面引入了link加载资源, 阻塞了script的执行和dom的渲染
+  console.log('this is demo log')
+</script>
+</body>
+</html>

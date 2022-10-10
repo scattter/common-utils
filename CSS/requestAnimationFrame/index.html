@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div id="demo" style="width: 100px; height: 100px; background-color: red">RequestAnimationFrame</div>
+<div id="area" style="width: 100px; height: 100px; background-color: cornflowerblue">setInterval</div>
+<script>
+  let start, previousTimeStamp
+  let direction = 'left'
+  let done = false
+  const animation = (timestamp) => {
+    // 设置开始时间 精度为1ms
+    if (!start) {
+      start = timestamp
+    }
+    
+    // 计算当前时间和开始时间的差
+    const elapsed = timestamp - start
+    
+    // 移动dom元素(设置最大值, 不然的话一直右移了)
+    const count = Math.min(0.1 * elapsed, 800)
+    
+    const isRight = direction === 'right'
+    // 进行相应移动
+    document.getElementById('demo').style.transform = `translateX(${isRight ? '+' : '-'}${count}px)`
+    // 如果移动到了顶点 那么就代表动画结束
+    if (count % 800 === 0) {
+      // 重置开始时间, 重新动画
+      start = timestamp
+      // 设置左边距, 从当前位置进行下次动画
+      document.getElementById('demo').style.marginLeft = isRight ? '800px' : '0px'
+      // 翻转动画的移动方向
+      direction = isRight ? 'left' : 'right'
+    }
+    
+    // 一直递归动画 (也可以自己设置停止条件)
+    window.requestAnimationFrame(animation)
+  }
+  // 目前在chrome中发现requestAnimationFrame并不会在标签隐藏后停止运行,
+  // 而setInterval会停止运行
+  window.requestAnimationFrame(animation)
+  
+  let distance = 0
+  let copyDirection = 'right'
+  const renderBySetInterval = () => {
+    if (distance === 800) return
+    distance++
+    console.log(distance)
+    const ele = document.getElementById('area')
+    distance = Math.min(distance, 800)
+    
+    const isRight = copyDirection === 'right'
+    ele.style.transform = `translateX(${isRight ? '+' : '-'}${distance}px)`
+    if (distance === 800) {
+      distance = 0
+      ele.style.marginLeft = isRight ? '800px' : '0px'
+      // 翻转动画的移动方向
+      copyDirection = isRight ? 'left' : 'right'
+    }
+  }
+  setInterval(function () {
+    renderBySetInterval()
+  }, 1000 / 96)
+</script>
+</body>
+</html>

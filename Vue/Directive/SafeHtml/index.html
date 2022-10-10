@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div id="app" style="width: 100px; height: 100px; background-color: aqua">
+  <div v-html="dangerHtml1"></div>
+  <div v-safe-html="dangerHtml2">2222</div>
+  <div v-html="safeHtml"></div>
+</div>
+<script src="../../source/vue.js"></script>
+<script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+<script type="module">
+  import safeHtml from './safeHtml.js'
+  // xss库的相关链接: https://juejin.cn/post/6844903918518927367
+  const app = new Vue({
+    el: '#app',
+    directives: {
+      safeHtml: safeHtml
+    },
+    data() {
+      return {
+        // 使用js-xss来进行过滤
+        dangerHtml1: ('<img src="http://-www.bai" onerror="alert(1)" alt=""><h2 style="background-color: antiquewhite">sfdsf</h2>'),
+        dangerHtml2: ('<img src="http://-" onerror="alert(2)" alt=""><h2 style="background-color: antiquewhite">sfdsf</h2>'),
+        safeHtml: filterXSS('<img src="http://-.bai" onerror="alert(3)" alt=""><h2 style="background-color: antiquewhite">sfdsf</h2>'),
+      }
+    },
+  })
+</script>
+</body>
+</html>

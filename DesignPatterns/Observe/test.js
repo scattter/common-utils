@@ -1,4 +1,4 @@
-import {Subject, Observe} from './assert.js'
+const {Subject, Observe} = require('./code.js')
 
 const subject = new Subject()
 

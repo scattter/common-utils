@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue directive</title>
+  <style>
+    .directive-area {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      height: 100%;
+      border: 2px solid cornflowerblue;
+      margin: 20px 10px;
+    }
+    .demo-area {
+      margin: 20px;
+      text-align: center;
+    }
+    .inner-area {
+      width: 200px;
+      height: 50px;
+      background-color: orange;
+    }
+    .custom-popper-dom {
+      width: 300px;
+      height: 80px;
+      background-color: aqua;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="directive-area">
+    <div class="click-outside demo-area">
+      <div class="custom-popper-dom">
+        <div>custom popper demo area, outside wil not active if you click inside</div>
+        <button @click="showArea">show inner area in right</button>
+        <div v-if="visible" v-outside="outsideLog" class="inner-area">
+          click outside will hide this area
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../../source/vue.js"></script>
+<script type="module">
+  import clickOutside from "./clickOutSide.js";
+  const app = new Vue({
+    el: '#app',
+    directives: {
+      outside: clickOutside
+    },
+    data() {
+      return {
+        visible: false,
+        trigger: false
+      }
+    },
+    mounted() {
+      // 如果加上这一句, 那么必须点击的是this.popperElm和绑定指令元素的区域外才能触发outside
+      this.popperElm = document.getElementsByClassName('custom-popper-dom')[0]
+    },
+    methods: {
+      outsideLog() {
+        console.log('click outside')
+        this.visible = false
+        this.trigger = false
+      },
+      showArea() {
+        console.log('----')
+        // 目前这里的逻辑是点击该元素, 渲染demo area
+        // 但是渲染出来后  再次点击该元素, 触发了outside
+        // 由于当前的元素绑定了方法  所以多增加了一个变量控制
+        !this.trigger && (this.visible = true)
+        this.trigger = true
+      }
+    }
+  })
+</script>
+</body>
+</html>

@@ -1,4 +1,10 @@
-export class Observe {
+module.exports = {
+  Observe,
+  Subject
+}
+
+// 观察者模式
+class Observe {
   constructor(name, subject) {
     this.name = name
     if (subject) {
@@ -11,7 +17,7 @@ export class Observe {
   }
 }
 
-export class Subject {
+class Subject {
   constructor() {
     this.observerList = []
   }
