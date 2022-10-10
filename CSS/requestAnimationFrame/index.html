@@ -8,7 +8,8 @@
   <title>Document</title>
 </head>
 <body>
-<div id="demo" style="width: 100px; height: 100px; background-color: red"></div>
+<div id="demo" style="width: 100px; height: 100px; background-color: red">RequestAnimationFrame</div>
+<div id="area" style="width: 100px; height: 100px; background-color: cornflowerblue">setInterval</div>
 <script>
   let start, previousTimeStamp
   let direction = 'left'
@@ -41,7 +42,31 @@
     // 一直递归动画 (也可以自己设置停止条件)
     window.requestAnimationFrame(animation)
   }
+  // 目前在chrome中发现requestAnimationFrame并不会在标签隐藏后停止运行,
+  // 而setInterval会停止运行
   window.requestAnimationFrame(animation)
+  
+  let distance = 0
+  let copyDirection = 'right'
+  const renderBySetInterval = () => {
+    if (distance === 800) return
+    distance++
+    console.log(distance)
+    const ele = document.getElementById('area')
+    distance = Math.min(distance, 800)
+    
+    const isRight = copyDirection === 'right'
+    ele.style.transform = `translateX(${isRight ? '+' : '-'}${distance}px)`
+    if (distance === 800) {
+      distance = 0
+      ele.style.marginLeft = isRight ? '800px' : '0px'
+      // 翻转动画的移动方向
+      copyDirection = isRight ? 'left' : 'right'
+    }
+  }
+  setInterval(function () {
+    renderBySetInterval()
+  }, 1000 / 96)
 </script>
 </body>
 </html>
