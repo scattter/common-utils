@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Expanding Card</title>
+</head>
+<body>
+<div class="main">
+  <div class="active-img img">
+    <h3 class="img-title">Image</h3>
+  </div>
+  <div class="img">
+    <h3 class="img-title">Image</h3>
+  </div>
+  <div class="img">
+    <h3 class="img-title">Image</h3>
+  </div>
+  <div class="img">
+    <h3 class="img-title">Image</h3>
+  </div>
+  <div class="img">
+    <h3 class="img-title">Image</h3>
+  </div>
+</div>
+</body>
+<script>
+  const imgs = document.getElementsByClassName('img')
+  let preNode = imgs.item(0)
+  document.addEventListener('click', (item) => {
+    // 用来判断当前点击元素是否是img
+    let flag = false
+    let curNode
+    for (let img of imgs) {
+      if (item.target === img && item.target !== preNode) {
+        flag = true
+        img.classList.add('active-img')
+        // 保存最新的点击节点
+        curNode = item.target
+      }
+    }
+    // 如果当前元素是另一个img, 先将之前节点上的类名移除
+    flag && preNode.classList.remove('active-img')
+    // 将最新的点击节点保存为下个循环里的上一个点击节点
+    flag && (preNode = curNode)
+  })
+</script>
+<style>
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    margin: 0;
+  }
+  .main {
+    display: flex;
+    width: 90vw;
+  }
+  .img {
+    display: inline-block;
+    flex: 0.5;
+    height: 80vh;
+    margin: 0 10px;
+    transition: flex 2s;
+    border-radius: 20px;
+    background-size: cover;
+    background-image: url('https://p1-arco.byteimg.com/tos-cn-i-uwbnlip3yd/a20012a2d4d5b9db43dfc6a01fe508c0.png~tplv-uwbnlip3yd-webp.webp');
+  }
+  .img:hover {
+    cursor: pointer;
+  }
+  .img-title {
+    margin: 10px;
+    color: white;
+    opacity: 0;
+    transition: opacity 2s;
+  }
+  .active-img {
+    flex: 5;
+    transition: flex 2s;
+  }
+  .active-img h3 {
+    opacity: 1;
+    transition: opacity 2s;
+  }
+</style>
+</html>
