@@ -1,23 +1,16 @@
 const { agenda } = require('./db/agenda')
-const Pipeline = require('./module/pipeline.js')
-const { PipelineScript } = require("./script/pipeline.script");
-
-agenda.define("log notice", async () => {
-  const result = await PipelineScript.findOneData({a:1})
-  console.log(result)
-});
+const PipelineModule = require('./module/pipeline.js')
+const { allDefinitions } = require("./definitions/index");
 
 (async function () {
-  await agenda.start();
+  // 统一注册schedule
+  allDefinitions(agenda);
   // 从sql主库里面查询配置的监测项目
-  const pipelines = await Pipeline.findAll()
+  const pipelines = await PipelineModule.findAll()
   if (pipelines && Array.isArray(pipelines) && pipelines.length > 0) {
     for (const pipeline of pipelines) {
-      const dayReport = agenda.create("log notice", {});
-      // IIFE to give access to async/await
-      // Alternatively, you could also do:
-      dayReport.repeatEvery("3 seconds");
-      await dayReport.save();
+      await agenda.every("3 seconds", "log notice")
+      await agenda.every("5 seconds", "send notice")
     }
   }
 })();

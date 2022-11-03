@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize')
 
 const mysql = require('../db/seq')
 
-const PipelineList = mysql.define(
+const PipelineModule = mysql.define(
   'pipeline',
   {
     id: {
@@ -45,4 +45,4 @@ const PipelineList = mysql.define(
   }
 )
 
-module.exports = PipelineList
+module.exports = PipelineModule
