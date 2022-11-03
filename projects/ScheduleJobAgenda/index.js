@@ -1,22 +1,23 @@
-const Agenda = require("agenda");
-const { queryOpenedMR} = require("./request"); // [username:password@]
-const mongoConnectionString = "mongodb://[username:password@]127.0.0.1:27017";
-const agenda = new Agenda({
-  db: { address: mongoConnectionString, collection: "notice" },
-});
+const { agenda } = require('./db/agenda')
+const Pipeline = require('./module/pipeline.js')
+const { PipelineScript } = require("./script/pipeline.script");
 
-agenda.define("log notice", async (job) => {
-  const { address, projectId, token } = job.attrs.data
-  const data = await queryOpenedMR(address, projectId, token)
-  console.log(data, '---')
+agenda.define("log notice", async () => {
+  const result = await PipelineScript.findOneData({a:1})
+  console.log(result)
 });
 
 (async function () {
-  const dayReport = agenda.create("log notice", { address: 'xxx', projectId: 1, token: 'xxx' });
-  // IIFE to give access to async/await
   await agenda.start();
-
-  // Alternatively, you could also do:
-  dayReport.repeatEvery("3 seconds");
-  await dayReport.save();
+  // 从sql主库里面查询配置的监测项目
+  const pipelines = await Pipeline.findAll()
+  if (pipelines && Array.isArray(pipelines) && pipelines.length > 0) {
+    for (const pipeline of pipelines) {
+      const dayReport = agenda.create("log notice", {});
+      // IIFE to give access to async/await
+      // Alternatively, you could also do:
+      dayReport.repeatEvery("3 seconds");
+      await dayReport.save();
+    }
+  }
 })();
