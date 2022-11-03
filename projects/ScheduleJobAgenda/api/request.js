@@ -2,7 +2,7 @@ const axios = require('axios');
 
 const get = (url, params, config) => {
   return axios.get(url, {
-    params,
+    ...params,
     ...config,
   });
 }

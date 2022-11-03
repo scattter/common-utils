@@ -1,14 +1,10 @@
-const {PipelineScript} = require("../script/pipeline.script");
-const { sendNotice } = require('../api/notice')
+const PipelineService = require('../service/pipeline.service')
 
 const pipelineDefinition = (agenda) => {
-  agenda.define("log notice", async () => {
-    const result = await PipelineScript.findOneData({a:1})
-    console.log(result)
-  });
-
-  agenda.define("send notice", async () => {
-    await sendNotice()
+  agenda.define("handle notice", async (job) => {
+    // address, projectId, token
+    const { relateRepo: address, projectId, token } = job.attrs.data
+    await PipelineService.handlePipeline({ address, projectId, token })
   })
 }
 

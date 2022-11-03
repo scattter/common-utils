@@ -7,15 +7,18 @@ class PipelineScript {
 
   // 插入单条数据
   async insertOneData(data, collection = DEFAULT_COLLECTION) {
-    await db.collection(collection).insertOne({ data })
+    try {
+      await db.collection(collection).insertOne({ data })
+      return Promise.resolve()
+    } catch (e) {
+      return Promise.reject(e)
+    }
   }
 
   // 查询单条数据
-  async findOneData(data, collection = DEFAULT_COLLECTION) {
-    return await db.collection(collection).find(data).toArray()
+  async findOneData(filter, collection = DEFAULT_COLLECTION) {
+    return db.collection(collection).find({ data: filter }).toArray();
   }
 }
 
-module.exports = {
-  PipelineScript: new PipelineScript()
-}
+module.exports = new PipelineScript()

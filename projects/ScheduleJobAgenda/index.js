@@ -9,8 +9,8 @@ const { allDefinitions } = require("./definitions/index");
   const pipelines = await PipelineModule.findAll()
   if (pipelines && Array.isArray(pipelines) && pipelines.length > 0) {
     for (const pipeline of pipelines) {
-      await agenda.every("3 seconds", "log notice")
-      await agenda.every("5 seconds", "send notice")
+      // await agenda.every("3 seconds", "log notice")
+      await agenda.every("5 seconds", "handle notice", { ...pipeline.dataValues })
     }
   }
 })();

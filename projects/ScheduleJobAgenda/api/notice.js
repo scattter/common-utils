@@ -13,7 +13,7 @@ const queryOpenedMR = (address, projectId, token) => {
   }).then(res => {
     return res.data
   }).catch(err => {
-    console.log(err)
+    return Promise.reject(err)
   })
 }
 
@@ -30,7 +30,7 @@ const sendNotice = (data = DEFAULT_NOTICE) => {
     ...defaultContext,
     msgData: {
       text:{
-        content: data
+        content: data + DEFAULT_NOTICE
       }
     }
   }
@@ -39,10 +39,8 @@ const sendNotice = (data = DEFAULT_NOTICE) => {
     {
       ...requestData
     }
-  ).then(res => {
-    console.log(res, 'success')
-  }).catch(err => {
-    console.log(err, 'error')
+  ).catch(err => {
+    return Promise.reject(err)
   })
 }
 
