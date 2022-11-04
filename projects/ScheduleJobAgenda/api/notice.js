@@ -30,7 +30,7 @@ const sendNotice = (data = DEFAULT_NOTICE) => {
     ...defaultContext,
     msgData: {
       text:{
-        content: data + DEFAULT_NOTICE
+        content: data
       }
     }
   }

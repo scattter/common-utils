@@ -2,39 +2,44 @@ const { DataTypes } = require('sequelize')
 
 const mysql = require('../db/seq')
 
-const PipelineModule = mysql.define(
-  'pipeline',
+const MrListenModel = mysql.define(
+  'merge_request_listen',
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    pipelineName: {
+    name: {
       type: DataTypes.CHAR(64),
       allowNull: false,
       unique: true,
-      comment: '流水线名称, 唯一且不为空, 最长64个字符',
+      comment: '此监听的名称',
     },
-    admin: {
+    owner: {
       type: DataTypes.CHAR(64),
       allowNull: false,
       unique: false,
-      comment: '流水线创建人',
+      comment: '创建监听的创建人',
     },
-    relateRepo: {
+    address: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: false,
-      defaultValue: 'normal',
-      comment: '流水线绑定仓库',
+      comment: '监听地址(gitlab的url地址)',
     },
-    relateBranch: {
+    projectId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      unique: false,
+      comment: '监听项目id',
+    },
+    branch: {
       type: DataTypes.STRING,
       allowNull: true,
       unique: false,
       defaultValue: 'master',
-      comment: '流水线绑定分支',
+      comment: '监听分支',
     },
   },
   {
@@ -45,4 +50,4 @@ const PipelineModule = mysql.define(
   }
 )
 
-module.exports = PipelineModule
+module.exports = MrListenModel

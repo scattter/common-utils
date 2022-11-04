@@ -2,7 +2,7 @@ const { client } = require('../db/mongo')
 const db = client.db('test')
 const DEFAULT_COLLECTION = 'notice-1'
 
-class PipelineScript {
+class MrListenScript {
   constructor() {}
 
   // 插入单条数据
@@ -21,4 +21,4 @@ class PipelineScript {
   }
 }
 
-module.exports = new PipelineScript()
+module.exports = new MrListenScript()

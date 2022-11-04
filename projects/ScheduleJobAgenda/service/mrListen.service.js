@@ -1,26 +1,26 @@
-const PipelineScript = require("../script/pipeline.script");
-const { convertToBaseInfo } = require('../type/pipeline.type')
+const MrListenScript = require("../script/mrListen.script");
+const { convertToBaseInfo } = require('../type/mrListen.type')
 const { queryOpenedMR, sendNotice } = require('../api/notice')
 
-class PipelineService {
+class MrListenService {
   // 判断是否保存mr信息到数据库以及发送信息
-  async handlePipeline({address, projectId, token}) {
+  async handleMrListen({address, projectId, token}) {
     try {
       // 当前所有未合入的mr信息
-      const pipelines = await queryOpenedMR(address, projectId, token)
+      const mrListens = await queryOpenedMR(address, projectId, token)
 
-      if (pipelines && pipelines.length > 0) {
-        for (let pipeline of pipelines) {
+      if (mrListens && mrListens.length > 0) {
+        for (let mrListen of mrListens) {
           const collection = `notice-${projectId}`
-          const noticeInfo = convertToBaseInfo(pipeline)
+          const noticeInfo = convertToBaseInfo(mrListen)
 
           if (noticeInfo) {
-            const oldData = await PipelineScript.findOneData(noticeInfo, collection)
+            const oldData = await MrListenScript.findOneData(noticeInfo, collection)
 
             // 如果当前新的mr不存在数据库中, 保存起来, 同时发送信息到指定位置
             if (Array.isArray(oldData) && oldData.length === 0) {
-              await PipelineScript.insertOneData(noticeInfo, collection).then(() => {
-                this.sendPipelineNotice(noticeInfo).then(() => {
+              await MrListenScript.insertOneData(noticeInfo, collection).then(() => {
+                this.sendMrListensNotice(noticeInfo).then(() => {
                   console.log('success send notice')
                 })
               }).catch(e => {
@@ -40,11 +40,11 @@ class PipelineService {
   }
 
   // 发送信息
-  async sendPipelineNotice(data) {
+  async sendMrListensNotice(data) {
     sendNotice(data).catch(e => {
       throw new Error(e)
     })
   }
 }
 
-module.exports = new PipelineService()
+module.exports = new MrListenService()

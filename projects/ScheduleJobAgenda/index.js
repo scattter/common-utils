@@ -1,16 +1,16 @@
 const { agenda } = require('./db/agenda')
-const PipelineModule = require('./module/pipeline.js')
+const MrListenModel = require('./model/mrListen.js')
 const { allDefinitions } = require("./definitions/index");
 
 (async function () {
   // 统一注册schedule
   allDefinitions(agenda);
   // 从sql主库里面查询配置的监测项目
-  const pipelines = await PipelineModule.findAll()
-  if (pipelines && Array.isArray(pipelines) && pipelines.length > 0) {
-    for (const pipeline of pipelines) {
+  const mrListens = await MrListenModel.findAll()
+  if (mrListens && Array.isArray(mrListens) && mrListens.length > 0) {
+    for (const mrListen of mrListens) {
       // await agenda.every("3 seconds", "log notice")
-      await agenda.every("5 seconds", "handle notice", { ...pipeline.dataValues })
+      await agenda.every("5 seconds", "handle notice", { ...mrListen.dataValues })
     }
   }
 })();

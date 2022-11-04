@@ -1,6 +1,6 @@
-const { pipelineDefinition } =  require("./pipeline.definition");
+const { mrListenDefinition } =  require("./mrListen.definition");
 
-const definitions = [pipelineDefinition];
+const definitions = [mrListenDefinition];
 
 const allDefinitions = (agenda) => {
   definitions.forEach((definition) => definition(agenda));
