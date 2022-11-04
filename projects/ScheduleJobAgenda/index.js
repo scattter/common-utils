@@ -10,7 +10,7 @@ const { allDefinitions } = require("./definitions/index");
   if (mrListens && Array.isArray(mrListens) && mrListens.length > 0) {
     for (const mrListen of mrListens) {
       // await agenda.every("3 seconds", "log notice")
-      await agenda.every("5 seconds", "handle notice", { ...mrListen.dataValues })
+      await agenda.every("5 seconds", "handle notice", mrListen.dataValues )
     }
   }
 })();

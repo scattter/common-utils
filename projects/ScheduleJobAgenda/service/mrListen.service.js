@@ -1,6 +1,7 @@
 const MrListenScript = require("../script/mrListen.script");
 const { convertToBaseInfo } = require('../type/mrListen.type')
 const { queryOpenedMR, sendNotice } = require('../api/notice')
+const { convertToCommonReview } = require("../response/mrListen");
 
 class MrListenService {
   // 判断是否保存mr信息到数据库以及发送信息
@@ -41,7 +42,8 @@ class MrListenService {
 
   // 发送信息
   async sendMrListensNotice(data) {
-    sendNotice(data).catch(e => {
+    const notice = convertToCommonReview(data)
+    sendNotice(notice).catch(e => {
       throw new Error(e)
     })
   }
