@@ -18,15 +18,7 @@ const responses = res.dataObject.dataList[0].dataList
 responses.forEach(response => {
   const time = response[4]
   const day = time.split(' ')[0]
-  if (dates[day]) {
-    if (dates[day].length >= 2) {
-      dates[day][1] = time
-    } else {
-      dates[day].push(time)
-    }
-  } else {
-    dates[day] = [time]
-  }
+  dates[day] = [response[4], response[5]]
 })
 Object.values(dates).forEach(([start, end]) => {
   if (hasOverTime(start, end)) {
