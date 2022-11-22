@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="container">
+  <div class="nav">
+    <div class="context">
+      <span>title</span>
+      <span>menu</span>
+      <span>topic</span>
+      <span>info</span>
+    </div>
+    <div class="button">
+      <div class="line1 line"></div>
+      <div class="line2 line"></div>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+  const button = document.getElementsByClassName('button').item(0)
+  const nav = document.getElementsByClassName('nav').item(0)
+  button.addEventListener('click', () => {
+    if (nav.classList.contains('active')) {
+      nav.classList.remove('active')
+    } else {
+      nav.classList.add('active')
+    }
+  })
+</script>
+<style>
+  .active.nav {
+    width: 30px;
+  }
+  .active .context {
+    width: 0;
+  }
+  .active .context span {
+    opacity: 0;
+    transform: rotateY(360deg);
+  }
+  .active .line1 {
+    transform: rotate(-630deg) translateX(4px);
+  }
+  .active .line2 {
+    transform: rotate(630deg) translateX(4px);
+  }
+  .button {
+    width: 30px;
+    height: 30px;
+    position: relative;
+    cursor: pointer;
+  }
+  .line1, .line2 {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background-color: #5290f9;
+  }
+  .line1 {
+    top: 6px;
+    right: 14px;
+    transform: rotate(45deg);
+    transition: transform 0.6s linear;
+  }
+  .line2 {
+    top: 6px;
+    right: 14px;
+    transform: rotate(-45deg);
+    transition: transform 0.6s linear;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: linear-gradient( to bottom, #eafbff 0%, #eafbff 50%, #5290f9 50%, #5290f9 100% );
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+    transition: width 0.6s linear;
+  }
+  .context {
+    display: flex;
+    width: 100%;
+    transition: width 0.6s linear;
+  }
+  .context span {
+    display: inline-block;
+    cursor: pointer;
+    width: 100%;
+    opacity: 1;
+    transform: rotateY(0deg);
+    transition: transform 0.6s linear, opacity 0.6s linear;
+  }
+</style>
+</html>
