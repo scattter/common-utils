@@ -72,7 +72,7 @@
   const viewHeight = document.body.clientHeight -50
   const CONTEXT_HEIGHT = 260
   let curHeight = 0
-  let startIndex = 0
+  let handleIndex = 0
   
   // 初始化展示context
   for (let i = 0; i < contexts.length; i++) {
@@ -82,7 +82,7 @@
     // 因为i从0开始, 所以+1  类似向上取整
     curHeight = (i + 1) * CONTEXT_HEIGHT
     contexts.item(i).classList.add('show')
-    startIndex += 1
+    handleIndex += 1
   }
 
   // 动态改变监听的元素
@@ -91,30 +91,27 @@
     // 处理可视化
     if (entries[0].intersectionRatio >= 0.8 && !entries[0].target.classList.contains('show')) {
       // 取消上一个监听
-      io.unobserve(contexts.item(Math.min(startIndex, contexts.length - 1)))
+      io.unobserve(contexts.item(Math.min(handleIndex, contexts.length - 1)))
       entries[0].target.classList.add('show')
       showContextsCount += 1
-      startIndex = Math.min(startIndex + 1, contexts.length - 1)
+      handleIndex = Math.min(handleIndex + 1, contexts.length - 1)
       // 监听下一个
-      io.observe(contexts.item(Math.min(startIndex, contexts.length - 1)))
-    } else if (entries[0].intersectionRatio < 0.8 && startIndex === showContextsCount - 1) {
+      io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+    } else if (entries[0].intersectionRatio < 0.8 && handleIndex === showContextsCount - 1) {
       // 这里只监听上滑的时候最后一个show的元素
-      io.unobserve(contexts.item(Math.min(startIndex, contexts.length - 1)))
+      io.unobserve(contexts.item(Math.min(handleIndex, contexts.length - 1)))
       // 处理滑动到初始位置的逻辑
-      if ((startIndex) * CONTEXT_HEIGHT < viewHeight) {
-        startIndex = Math.min(startIndex + 1, contexts.length - 1)
-        io.observe(contexts.item(Math.min(startIndex, contexts.length - 1)))
+      if ((handleIndex) * CONTEXT_HEIGHT < viewHeight) {
+        handleIndex = Math.min(handleIndex + 1, contexts.length - 1)
+        io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
         return
       }
       entries[0].target.classList.remove('show')
       showContextsCount -= 1
-      startIndex = Math.max(startIndex - 1, 0)
-      io.observe(contexts.item(Math.min(startIndex, contexts.length - 1)))
+      handleIndex = Math.max(handleIndex - 1, 0)
+      io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
     }
-  }, {
-    root: null,
-    threshold: 0.8
   })
-  io.observe(contexts.item(Math.min(startIndex, contexts.length - 1)))
+  io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
 </script>
 </html>
