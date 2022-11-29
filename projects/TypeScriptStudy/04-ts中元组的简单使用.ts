@@ -8,7 +8,7 @@ function logger(arg1: SimpleType, arg2: SimpleType) {
 const res = logger([1, 'first '], [10, 'second'])
 console.log(res)
 
-function SimpleStringStore(initValue: string): [get: () => string, set: (v: string) => void ] {
+function SimpleStringStore4(initValue: string): [get: () => string, set: (v: string) => void ] {
   let str: string = initValue
   return [
     () => str,
@@ -18,8 +18,8 @@ function SimpleStringStore(initValue: string): [get: () => string, set: (v: stri
   ]
 }
 
-const [getter1, setter1] = SimpleStringStore('good')
-const [getter2, setter2] = SimpleStringStore('new')
+const [getter1, setter1] = SimpleStringStore4('good')
+const [getter2, setter2] = SimpleStringStore4('new')
 console.log(getter1())
 console.log(getter2())
 setter1('bye')
