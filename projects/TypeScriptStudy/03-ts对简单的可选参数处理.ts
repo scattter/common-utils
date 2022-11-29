@@ -1,9 +1,9 @@
-function logger(arg1: string, arg2: string, arg3?: string) {
+function logger3(arg1: string, arg2: string, arg3?: string) {
   console.log(`this is ${arg1} ${arg2} ${arg3 ?? ''}`)
 }
 
-logger('123', '456')
-logger('123', '456', '789')
+logger3('123', '456')
+logger3('123', '456', '789')
 
 interface User {
   name: string
