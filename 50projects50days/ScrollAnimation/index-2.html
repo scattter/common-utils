@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="main">
+  <h1 style="text-align: center">Scroll Animation</h1>
+  <div class="contexts">
+    <div class="context">Node 1</div>
+    <div class="context">Node 2</div>
+    <div class="context">Node 3</div>
+    <div class="context">Node 4</div>
+    <div class="context">Node 5</div>
+    <div class="context">Node 6</div>
+    <div class="context">Node 7</div>
+    <div class="context">Node 8</div>
+    <div class="context">Node 9</div>
+    <div class="context">Node 10</div>
+  </div>
+</div>
+</body>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  .main {
+    width: 100vw;
+    height: 100vh;
+    background-color: antiquewhite;
+    overflow: auto;
+  }
+  .contexts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .context {
+    width: 300px;
+    height: 200px;
+    border-radius: 10px;
+    margin: 30px 0;
+    background-color: steelblue;
+    color: white;
+    font-size: 30px;
+    line-height: 200px;
+    text-align: center;
+    opacity: 0;
+    transition: transform 0.4s linear, opacity 0.4s linear;
+  }
+  .contexts :nth-child(2n) {
+    transform: translateX(200%);
+    /*align-self: flex-end;*/
+  }
+  .contexts :nth-child(2n - 1) {
+    transform: translateX(-200%);
+    /*align-self: flex-start;*/
+  }
+  .show.context {
+    transform: translateX(0);
+    opacity: 1;
+    /*align-self: center;*/
+  }
+</style>
+<script>
+  const contexts = document.getElementsByClassName('context')
+  const viewHeight = document.body.clientHeight -50
+  const CONTEXT_HEIGHT = 260
+  let curHeight = 0
+  let handleIndex = 0
+  
+  // 初始化展示context
+  for (let i = 0; i < contexts.length; i++) {
+    if (curHeight > viewHeight) {
+      break
+    }
+    // 因为i从0开始, 所以+1  类似向上取整
+    curHeight = (i + 1) * CONTEXT_HEIGHT
+    contexts.item(i).classList.add('show')
+    handleIndex += 1
+  }
+
+  // 动态改变监听的元素
+  let showContextsCount = document.getElementsByClassName('show').length
+  const io = new IntersectionObserver(entries => {
+    // 处理可视化
+    if (entries[0].intersectionRatio >= 0.8 && !entries[0].target.classList.contains('show')) {
+      // 取消上一个监听
+      io.unobserve(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+      entries[0].target.classList.add('show')
+      showContextsCount += 1
+      handleIndex = Math.min(handleIndex + 1, contexts.length - 1)
+      // 监听下一个
+      io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+    } else if (entries[0].intersectionRatio < 0.8 && handleIndex === showContextsCount - 1) {
+      // 这里只监听上滑的时候最后一个show的元素
+      io.unobserve(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+      // 处理滑动到初始位置的逻辑
+      if ((handleIndex) * CONTEXT_HEIGHT < viewHeight) {
+        handleIndex = Math.min(handleIndex + 1, contexts.length - 1)
+        io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+        return
+      }
+      entries[0].target.classList.remove('show')
+      showContextsCount -= 1
+      handleIndex = Math.max(handleIndex - 1, 0)
+      io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+    }
+  })
+  io.observe(contexts.item(Math.min(handleIndex, contexts.length - 1)))
+</script>
+</html>

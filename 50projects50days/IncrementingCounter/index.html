@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div class="counters">
+    <div class="counter counter-1"></div>
+    <div class="counter counter-2"></div>
+    <div class="counter counter-3"></div>
+  </div>
+</body>
+<script>
+  // 两个方法均可
+  // (1) 新的接口(只要当前资源加载完, 可以看见就会加载)
+  const counters = document.getElementsByClassName('counters').item(0)
+  const countList = document.getElementsByClassName('counter')
+  const nums = [181, 520, 999]
+  const observe = new IntersectionObserver(() => {
+    for (let i = 0; i < countList.length; i++) {
+      countList.item(i).style.setProperty('--initCount', nums[i].toString())
+    }
+  })
+  observe.observe(counters)
+
+
+  // (2) 原生事件(有其他资源没加载完, 这里也要等待执行的情况)
+  document.onreadystatechange = function() {
+    // 当document文档正在加载时,返回"loading"。
+    // 当文档结束渲染但在加载内嵌资源时，返回"interactive"，并引发DOMContentLoaded事件。
+    // 当文档加载完成时,返回"complete"，并引发load事件
+    if(document.readyState === 'complete'){
+      // 页面加载完毕
+      for (let i = 0; i < countList.length; i++) {
+        countList.item(i).style.setProperty('--initCount', nums[i].toString())
+      }
+    }
+  }
+  
+  // window的onload是整个文档的内容加载完成时才会发生, 相当于上面的document.readyState === 'complete'
+  // window.onload = function(){
+  //   for (let i = 0; i < countList.length; i++) {
+  //     countList.item(i).style.setProperty('--initCount', nums[i].toString())
+  //   }
+  // }
+</script>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .counters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 40vw;
+    height: 20vh;
+  }
+  .counter {
+    width: 100px;
+    height: 100px;
+    border-radius: 20%;
+    background-color: antiquewhite;
+    font-size: 30px;
+    text-align: center;
+    line-height: 100px;
+    counter-reset: curCount var(--initCount);
+    transition: --initCount 1s linear;
+  }
+  .counter::before {
+    content: counter(curCount);
+  }
+  
+  @property --initCount {
+    syntax: "<integer>";
+    inherits: true;
+    initial-value: 0;
+  }
+</style>
+</html>
