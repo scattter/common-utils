@@ -2,15 +2,20 @@ lockfileVersion: 5.4
 
 importers:
 
-  GenerateLogs:
+  test:
     specifiers:
-      shelljs: ^0.8.5
-      yaml: ^2.1.3
+      '@scatter_zk/generate-logs': ^1.0.1
+    dependencies:
+      '@scatter_zk/generate-logs': 1.0.1
+
+packages:
+
+  /@scatter_zk/generate-logs/1.0.1:
+    resolution: {integrity: sha512-yYw0FZdPtdC9HRwSqJigfz6ep+EgdqwxJxtP7inmzPtwXReeDmQCNtSeEd+TC6cT1aWZmfW/2OGMX9eAHJPfHw==}
     dependencies:
       shelljs: 0.8.5
       yaml: 2.1.3
-
-packages:
+    dev: false
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}

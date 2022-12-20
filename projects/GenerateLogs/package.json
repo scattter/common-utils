@@ -1,0 +1,16 @@
+{
+  "name": "@scatter_zk/generate-logs",
+  "version": "1.0.1",
+  "description": "generate logs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["logs", "record"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "shelljs": "^0.8.5",
+    "yaml": "^2.1.3"
+  }
+}

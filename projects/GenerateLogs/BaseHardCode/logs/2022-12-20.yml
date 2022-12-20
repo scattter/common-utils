@@ -1,0 +1,16 @@
+./scripts/demo.sh:
+  status: success
+  firstDate: 2022-12-20 12:46:04
+  lastDate: 2022-12-20 12:46:04
+./scripts/demo2.sh:
+  status: success
+  firstDate: 2022-12-20 12:46:04
+  lastDate: 2022-12-20 12:46:04
+./scripts/demo3.sh:
+  status: success
+  firstDate: 2022-12-20 12:46:04
+  lastDate: 2022-12-20 12:46:04
+./scripts/demo4.sh:
+  status: success
+  firstDate: 2022-12-20 12:46:05
+  lastDate: 2022-12-20 12:46:05
