@@ -1,8 +1,4 @@
-2022-12-18:
-  ./scripts/demo.sh: error
-  ./scripts/demo2.sh: error
-  ./scripts/demo3.sh: error
-2022-12-19:
+2022-12-20:
   ./scripts/demo.sh: success
   ./scripts/demo2.sh: success
   ./scripts/demo3.sh: success
