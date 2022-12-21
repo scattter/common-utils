@@ -4,7 +4,7 @@ const YAML = require('yaml')
 
 const DEFAULT_SCRIPTS_PATH = './scripts'
 const DEFAULT_LOGS_PATH = './logs'
-const DEFAULT_SUMMARY_LOG_PATH = './logs/all.yml'
+const DEFAULT_SUMMARY_LOG_PATH = '/all.yml'
 const DEFAULT_READ_FILE_OPTION = {
   flag: 'a+',
   encoding: 'utf8'
@@ -56,7 +56,7 @@ function execScript(filePath, targetPath, newScripts, ...options) {
 
 // 生成log
 function generateLogs(logsFolderPath = DEFAULT_LOGS_PATH, scriptsFolderPath = DEFAULT_SCRIPTS_PATH, ...options) {
-  const { summaryLogPath = DEFAULT_SUMMARY_LOG_PATH, readFileOption = DEFAULT_READ_FILE_OPTION } = options || {}
+  const { summaryLogPath = `${logsFolderPath}${DEFAULT_SUMMARY_LOG_PATH}`, readFileOption = DEFAULT_READ_FILE_OPTION } = options || {}
   let readDirs = fs.readdirSync(scriptsFolderPath);
   let allLogs = fs.readFileSync(summaryLogPath, readFileOption);
   let parsedLogs = YAML.parse(allLogs)
