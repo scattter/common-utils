@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="pic"></div>
+<div class="text">0%</div>
+<script>
+  const scale = (num, in_min, in_max, out_min, out_max) => {
+    return ((num - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min
+  }
+  
+  let process = 0
+  const text = document.querySelector('.text')
+  const pic = document.querySelector('.pic')
+  const inter = setInterval(() => {
+    process += 1
+    if (process > 99) {
+      clearInterval(inter)
+    }
+    text.innerHTML = `${process}%`
+    text.style.opacity = scale(process, 0, 100, 1, 0)
+    pic.style.filter = `blur(${scale(process, 0, 100, 20, 0)}px)`
+  }, 30)
+</script>
+<style>
+  .pic {
+    position: absolute;
+    top: -30px;
+    left: -30px;
+    width: calc(100vw + 30px);
+    height: calc(100vh + 30px);
+    background: url('https://images.unsplash.com/photo-1576161787924-01bb08dad4a4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2104&q=80')
+    no-repeat center center/cover;
+    z-index: -1;
+    filter: blur(20px);
+  }
+  .text {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: #eafbff;
+    font-size: 30px;
+    transform: translate(-50%, -50%);
+    opacity: 1;
+    z-index: 1;
+  }
+</style>
+</body>
+</html>
