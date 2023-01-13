@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="wrapper">
+  <div class="area target"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+  <div class="area"></div>
+</div>
+<script>
+  const areas = document.querySelectorAll('.area')
+  const wrapper = document.querySelector('.wrapper')
+
+  // 我们当前正在飞过的潜在的 droppable 的元素
+  let currentDroppable = null;
+  // 当前元素
+  let curTarget = areas[0]
+  
+  const handleEleLeave = () => {
+    if (currentDroppable) {
+      // 处理“飞出” droppable 的元素时的处理逻辑（移除高亮）
+      currentDroppable.classList.contains('active') && currentDroppable.classList.remove('active')
+    }
+  }
+  
+  const handleEleEnter = (elemBelow) => {
+    if (currentDroppable) {
+      // 处理“飞入” droppable 的元素时的逻辑
+      !elemBelow.classList.contains('active') && elemBelow.classList.add('active')
+    }
+  }
+
+  areas.forEach(area => {
+    area.addEventListener('mousedown', (e) => {
+      // 如果当前元素不是默认拖拽元素, return
+      if (!area.classList.contains('target')) return
+      area.classList.remove('target')
+      
+      // 设置temp元素, 移除跟随动画
+      const { offsetX, offsetY } = e
+      const temp = document.createElement('div')
+      temp.classList.add('move-area')
+      temp.style.position = 'absolute'
+      temp.style.left = e.clientX + 'px'
+      temp.style.top = e.clientY + 'px'
+      
+      // 监听temp元素移动
+      temp.addEventListener('mousemove', (e) => {
+        // 设置temp的位置
+        temp.style.left = e.clientX - offsetX + 'px'
+        temp.style.top = e.clientY - offsetY + 'px'
+  
+        // 这里通过先隐藏后展示, 来获取被temp遮挡的下层元素
+        temp.hidden = true
+        let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+        temp.hidden = false
+  
+        // 移除上一个可拖拽元素的样式
+        handleEleLeave()
+  
+        // 如果当前鼠标移动过的元素是null 或者 不符合拖拽, return
+        if (!elemBelow || !elemBelow.classList.contains('area')) return
+  
+        // 更新新的可拖拽元素
+        currentDroppable = elemBelow;
+  
+        // 为新的可拖拽元素添加样式
+        handleEleEnter(elemBelow)
+      })
+      
+      // 监听temp元素上鼠标抬起
+      temp.addEventListener('mouseup', (e) => {
+        // temp元素作用完成, 移除
+        temp.remove()
+        
+        // 获取当前鼠标弹起时下方的元素
+        let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+        
+        // 判断是否是可拖拽元素, 不是的话就保持之前状态
+        if (!elemBelow.classList.contains('area')) {
+          
+          // 保持之前状态
+          curTarget.classList.add('target')
+          // 移除拖拽样式
+          curTarget.classList.contains('active') && curTarget.classList.remove('active')
+          
+          // 处理“飞出” droppable 的元素时的处理逻辑（移除高亮
+          handleEleLeave()
+          return
+        }
+        
+        // 当前元素是可拖拽元素, 进行更新
+        curTarget = elemBelow
+        elemBelow.classList.add('target')
+        elemBelow.classList.contains('active') && elemBelow.classList.remove('active')
+      })
+      
+      // 父元素添加temp
+      wrapper.append(temp)
+    })
+    
+    // area.addEventListener('mouseenter', (e) => {
+    //   const temp = document.querySelector('.move-area')
+    //   if (temp && !area.classList.contains('target')) {
+    //     temp.remove()
+    //     area.classList.add('target')
+    //   }
+    // })
+  
+    // areas.forEach(area => {
+    //   if (e.clientX > area.offsetLeft && e.clientY < area.offsetLeft + area.offsetWidth) {
+    //     !area.classList.contains('active') && area.classList.add('active')
+    //   } else {
+    //     area.classList.remove('active')
+    //   }
+    // })
+  
+  })
+</script>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: aqua;
+  }
+  .wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 900px;
+    height: 100%;
+  }
+  .area {
+    border: 4px solid #000;
+    width: 150px;
+    height: 150px;
+    background-color: white;
+  }
+  .move-area {
+    width: 150px;
+    height: 150px;
+    opacity: 0.3;
+    border: 4px solid #000;
+    background: #4E5969 url("logo.jpeg") center/cover no-repeat;
+  }
+  .active {
+    border: 4px dashed white;
+    background: #4E5969 center/cover no-repeat;
+  }
+  .target {
+    background: url("logo.jpeg") center/cover no-repeat;
+  }
+</style>
+</body>
+</html>
