@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="main">
+  <button>send frame</button>
+</div>
+<script>
+  const startBtn = document.createElement("button");
+  startBtn.innerHTML = "Start listening";
+  const result = document.createElement("div");
+  const processing = document.createElement("p");
+  document.write("<body><h1>My Siri</h1><p>Give it a try with 'hello', 'how are you', 'what's your name', 'what time is it', 'stop', ... </p></body>");
+  document.body.append(startBtn);
+  document.body.append(result);
+  document.body.append(processing);
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (typeof SpeechRecognition === "undefined") {
+    startBtn.remove();
+    result.innerHTML = "<b>Browser does not support Speech API. Please download latest chrome.<b>";
+  }
+  
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  
+  function process(speech_text) {
+    return "....";
+  }
+  recognition.onresult = event => {
+    const last = event.results.length - 1;
+    const res = event.results[last];
+    const text = res[0].transcript;
+    console.log(text)
+    if (res.isFinal) {
+      processing.innerHTML = "processing ....";
+      const response = process(text);
+      const p = document.createElement("p");
+      p.innerHTML = `You said: ${text} </br>Siri said: ${response}`;
+      processing.innerHTML = "";
+      result.appendChild(p);
+      fetch(`/res`, {
+        method: 'POST',//post请求
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({//post请求参数
+          res: event.results
+        })
+      })
+        .then((response) => response.json())
+        // .then((result) => {
+        //   if (result.score > 0) {
+        //     setEmoji('positive')
+        //   } else if (result.score < 0) {
+        //     setEmoji('negative')
+        //   } else {
+        //     setEmoji('listening')
+        //   }
+        // })
+        .catch((e) => {
+          console.error('Request error -> ', e)
+          recognition.abort()
+        })
+      // add text to speech later
+    } else {
+      processing.innerHTML = `listening: ${text}`;
+    }
+  }
+  
+  let listening = false;
+  let audioCtx = null; // 音频上下文
+  let source = null; // 音频源
+  let audioStream = null; // 录音产生的音频流
+  let analyserNode = null; // 用于分析音频实时数据的节点
+  let animationFrame = null; // 定时器
+
+  function floatTo16BitPCM(output, offset, input) {
+    for (let i = 0; i < input.length; i++, offset += 2) {
+      let s = Math.max(-1, Math.min(1, input[i]));
+      output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+  }
+  
+  toggleBtn = () => {
+    if (listening) {
+      // recognition.stop();
+      startBtn.textContent = "Start listening";
+      // 关闭麦克风
+      const tracks = audioStream.getAudioTracks();
+      for (let i = 0, len = tracks.length; i < len; i++) {
+        tracks[i].stop();
+      }
+      // let myArrayBuffer = audioCtx.createBuffer(1, 512, 16000);
+      // let nowBuffering = myArrayBuffer.getChannelData(0);
+      // console.log(nowBuffering, '====', nowBuffering.reduce((total, cur) => total += cur, 0))
+      let offlineCtx = new OfflineAudioContext(1,512,16000);
+      // audioCtx.decodeAudioData(source.buffer, (buffer) => {
+      //   console.log(buffer, '=-----')
+      // })
+      offlineCtx.startRendering().then(buffer => {
+        console.log(buffer, '=====', buffer.getChannelData(0))
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let song = audioCtx.createBufferSource();
+        song.buffer = buffer;
+  
+        song.connect(audioCtx.destination);
+      })
+      // let bff = source = offlineCtx.createBufferSource();
+      // bff.buffer = source.buffer
+      // console.log(source.buffer, '--0--', source)
+      // 断开音频节点
+      analyserNode.disconnect();
+      source.disconnect();
+      analyserNode = null;
+      source = null;
+      // 清除定时器
+      clearInterval(animationFrame);
+    } else {
+      // recognition.start();
+      startBtn.textContent = "Stop listening";
+      navigator.mediaDevices
+        .getUserMedia({ 'audio': true }).then(res => {
+        audioStream = res;
+        // 创建音频上下文
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)({
+          sampleRate: 16000  //设置采样率
+        });
+        let scriptNode = audioCtx.createScriptProcessor(512, 1, 1);
+        // 创建音频源
+        source = audioCtx.createMediaStreamSource(audioStream);
+        // 创建音频分析节点
+        analyserNode = audioCtx.createAnalyser();
+        // fftSize决定了能够获取到的音频数据的数量
+        analyserNode.fftSize = 512;
+        //添加事件处理
+        scriptNode.onaudioprocess = function (audioProcessingEvent) {
+          //输入流位置
+          let inputBuffer = audioProcessingEvent.inputBuffer;
+          //输出流位置
+          let outputBuffer = audioProcessingEvent.outputBuffer;
+          //遍历通道处理数据，当前只有1个输入1个输出
+          for (let channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+            let inputData = inputBuffer.getChannelData(channel);
+            let outputData = outputBuffer.getChannelData(channel);
+          }
+        }
+        // fetch(`/res`, {
+        //   method: 'POST',//post请求
+        //   headers: {
+        //     'Accept': 'application/json',
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({//post请求参数
+        //     res: event.results
+        //   })
+        // })
+      })
+    }
+    listening = !listening;
+  };
+  startBtn.addEventListener("click", toggleBtn);
+</script>
+</body>
+</html>

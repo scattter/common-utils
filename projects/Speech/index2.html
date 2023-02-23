@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="main">
+  <button>send frame</button>
+</div>
+<script>
+  const startBtn = document.createElement("button");
+  startBtn.innerHTML = "Start listening";
+  const result = document.createElement("div");
+  const processing = document.createElement("p");
+  document.write("<body><h1>My Siri</h1><p>Give it a try with 'hello', 'how are you', 'what's your name', 'what time is it', 'stop', ... </p></body>");
+  document.body.append(startBtn);
+  document.body.append(result);
+  document.body.append(processing);
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (typeof SpeechRecognition === "undefined") {
+    startBtn.remove();
+    result.innerHTML = "<b>Browser does not support Speech API. Please download latest chrome.<b>";
+  }
+  
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  
+  function process(speech_text) {
+    return "....";
+  }
+  recognition.onresult = event => {
+    const last = event.results.length - 1;
+    const res = event.results[last];
+    const text = res[0].transcript;
+    console.log(text)
+    if (res.isFinal) {
+      processing.innerHTML = "processing ....";
+      const response = process(text);
+      const p = document.createElement("p");
+      p.innerHTML = `You said: ${text} </br>Siri said: ${response}`;
+      processing.innerHTML = "";
+      result.appendChild(p);
+      fetch(`/res`, {
+        method: 'POST',//post请求
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({//post请求参数
+          res: event.results
+        })
+      })
+        .then((response) => response.json())
+        // .then((result) => {
+        //   if (result.score > 0) {
+        //     setEmoji('positive')
+        //   } else if (result.score < 0) {
+        //     setEmoji('negative')
+        //   } else {
+        //     setEmoji('listening')
+        //   }
+        // })
+        .catch((e) => {
+          console.error('Request error -> ', e)
+          recognition.abort()
+        })
+      // add text to speech later
+    } else {
+      processing.innerHTML = `listening: ${text}`;
+    }
+  }
+  
+  let listening = false;
+  let audioCtx = null; // 音频上下文
+  let source = null; // 音频源
+  let audioStream = null; // 录音产生的音频流
+  let analyserNode = null; // 用于分析音频实时数据的节点
+  let animationFrame = null; // 定时器
+  
+  toggleBtn = () => {
+    if (listening) {
+      // recognition.stop();
+      startBtn.textContent = "Start listening";
+      // 关闭麦克风
+      const tracks = audioStream.getAudioTracks();
+      for (let i = 0, len = tracks.length; i < len; i++) {
+        tracks[i].stop();
+      }
+      // 断开音频节点
+      analyserNode.disconnect();
+      source.disconnect();
+      analyserNode = null;
+      source = null;
+      // 清除定时器
+      clearInterval(animationFrame);
+    } else {
+      // recognition.start();
+      startBtn.textContent = "Stop listening";
+      navigator.mediaDevices
+        .getUserMedia({ 'audio': true }).then(res => {
+        console.log(res, '----')
+        audioStream = res;
+        // 创建音频上下文
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)({
+          sampleRate: 16000  //设置采样率
+        });
+        // 创建音频源
+        source = audioCtx.createMediaStreamSource(audioStream);
+        // 创建音频分析节点
+        analyserNode = audioCtx.createAnalyser();
+        // fftSize决定了能够获取到的音频数据的数量
+        analyserNode.fftSize = 2048;
+        // 音频源连接至analyserNode
+        source.connect(analyserNode);
+        // analyserNode再连接至扬声器播放
+        analyserNode.connect(audioCtx.destination);
+        console.log(source, analyserNode)
+        // fetch(`/res`, {
+        //   method: 'POST',//post请求
+        //   headers: {
+        //     'Accept': 'application/json',
+        //     'Content-Type': 'application/json'
+        //   },
+        //   body: JSON.stringify({//post请求参数
+        //     res: event.results
+        //   })
+        // })
+      })
+    }
+    listening = !listening;
+  };
+  startBtn.addEventListener("click", toggleBtn);
+</script>
+</body>
+</html>
