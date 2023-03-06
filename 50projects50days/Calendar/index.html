@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="wrapper">
+</div>
+<script>
+  // get header
+  const HEADER = ['日', '一', '二', '三', '四', '五', '六']
+  const DOUBLEHEADER = HEADER.concat(HEADER)
+  const WEEKDAYS = 7
+  
+  // 获取日历的头
+  const getHeader = (beginDay = 0) => {
+    return DOUBLEHEADER.slice(beginDay, beginDay + 7)
+  }
+  
+  // 获取当月第一天是周几
+  const getFirstDayWeekInMonth = (time = new Date()) => {
+    time.setDate(1)
+    return time.getDay()
+  }
+  
+  // 获取当月有多少天
+  const getDaysInMonth = (time = new Date()) => {
+    return new Date(time.getFullYear(), time.getMonth() + 1, 0).getDate()
+  }
+  
+  const render = (begin = 0, time = new Date()) => {
+    // getHeader(begin) header
+    // Array(getFirstDayWeekInMonth(time) - 1).fill(0)  补0
+    // getDaysInMonth(time) 添加具体的数字
+    return getHeader(begin).concat(Array(getFirstDayWeekInMonth(time) - 1).fill(0)).concat([...Array(getDaysInMonth(time)).keys()])
+  }
+
+  const ele = document.createDocumentFragment()
+  const days = render() || []
+  Array(Math.ceil(days.length / WEEKDAYS)).fill(0).forEach((item, index) => {
+    const lineEle = document.createElement('div')
+    lineEle.style.display = 'flex'
+    days.slice(index * WEEKDAYS, (index + 1) * WEEKDAYS).forEach(day => {
+      const span = document.createElement('span')
+      span.classList.add('day')
+      span.innerHTML = day !== 0 ? day.toString() : ''
+      lineEle.append(span)
+    })
+    ele.append(lineEle)
+  })
+  document.querySelector('.wrapper').append(ele)
+</script>
+</body>
+<style>
+  .wrapper {
+    width: 400px;
+    margin: 0 auto;
+    background-color: #eafbff;
+  }
+  .day {
+    display: inline-block;
+    margin: 5px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+  }
+</style>
+</html>
