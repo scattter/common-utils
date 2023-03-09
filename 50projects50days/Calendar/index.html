@@ -9,12 +9,42 @@
 </head>
 <body>
 <div class="wrapper">
+  <div class="operation">
+    <button class="op-prev">前一个月</button>
+    <button class="op-next">后一个月</button>
+    <span class="op-text"></span>
+  </div>
+  <div class="calendar"></div>
 </div>
 <script>
   // get header
   const HEADER = ['日', '一', '二', '三', '四', '五', '六']
   const DOUBLEHEADER = HEADER.concat(HEADER)
   const WEEKDAYS = 7
+  const time = new Date()
+  let month = time.getMonth()
+  let year = time.getFullYear()
+  
+  const prevEle = document.querySelector('.op-prev')
+  const nextEle = document.querySelector('.op-next')
+  const calendarEle = document.querySelector('.calendar')
+  const opTextEle = document.querySelector('.op-text')
+  
+  prevEle.addEventListener('click', () => {
+    if (month === 0) {
+      year -= 1
+    }
+    month = month === 0 ? 11 : --month
+    render()
+  })
+
+  nextEle.addEventListener('click', () => {
+    if (month === 11) {
+      year += 1
+    }
+    month = month === 11 ? 0 : ++month
+    render()
+  })
   
   // 获取日历的头
   const getHeader = (beginDay = 0) => {
@@ -32,27 +62,39 @@
     return new Date(time.getFullYear(), time.getMonth() + 1, 0).getDate()
   }
   
-  const render = (begin = 0, time = new Date()) => {
+  // 组装表格数据
+  const setupDays = (begin = 0, time = new Date()) => {
     // getHeader(begin) header
-    // Array(getFirstDayWeekInMonth(time) - 1).fill(0)  补0
-    // getDaysInMonth(time) 添加具体的数字
-    return getHeader(begin).concat(Array(getFirstDayWeekInMonth(time) - 1).fill(0)).concat([...Array(getDaysInMonth(time)).keys()])
+    // Array(getFirstDayWeekInMonth(time)).fill(0)  补0
+    // getDaysInMonth(time) 添加具体的数字, 后续从1开始打印
+    return getHeader(begin)
+      .concat(Array(getFirstDayWeekInMonth(time)).fill(0))
+      .concat([...Array(getDaysInMonth(time)).keys()].map(key => key+= 1))
   }
 
-  const ele = document.createDocumentFragment()
-  const days = render() || []
-  Array(Math.ceil(days.length / WEEKDAYS)).fill(0).forEach((item, index) => {
-    const lineEle = document.createElement('div')
-    lineEle.style.display = 'flex'
-    days.slice(index * WEEKDAYS, (index + 1) * WEEKDAYS).forEach(day => {
-      const span = document.createElement('span')
-      span.classList.add('day')
-      span.innerHTML = day !== 0 ? day.toString() : ''
-      lineEle.append(span)
+  let ele = document.createElement('div')
+  const render = () => {
+    calendarEle.contains(ele) && calendarEle.removeChild(ele)
+    ele = document.createElement('div')
+    opTextEle.innerHTML = `${year}-${month + 1}`
+    const days = setupDays(0, new Date(year, month)) || []
+    Array(Math.ceil(days.length / WEEKDAYS)).fill(0).forEach((item, index) => {
+      const lineEle = document.createElement('div')
+      lineEle.style.display = 'flex'
+      days.slice(index * WEEKDAYS, (index + 1) * WEEKDAYS).forEach(day => {
+        const span = document.createElement('span')
+        span.classList.add('day')
+        if (year === time.getFullYear() && month === time.getMonth() && time.getDate() === day) {
+          span.classList.add('today')
+        }
+        span.innerHTML = day !== 0 ? day.toString() : ''
+        lineEle.append(span)
+      })
+      ele.append(lineEle)
     })
-    ele.append(lineEle)
-  })
-  document.querySelector('.wrapper').append(ele)
+    calendarEle.append(ele)
+  }
+  render()
 </script>
 </body>
 <style>
@@ -68,6 +110,10 @@
     height: 30px;
     line-height: 30px;
     text-align: center;
+  }
+  .today {
+    border: 1px solid red;
+    border-radius: 50%;
   }
 </style>
 </html>
