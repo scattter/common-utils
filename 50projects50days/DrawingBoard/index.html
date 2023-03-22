@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="wrapper">
+  <canvas id="canvas" width="500" height="500"></canvas>
+  <div class="opera">
+    <div class="width">
+      <span>宽度</span>
+      <button class="minus"> - </button>
+      <input class="width-input" type="number" value="5" readonly>
+      <button class="add"> + </button>
+    </div>
+    <button class="clear">clear</button>
+    <button class="save">save</button>
+  </div>
+</div>
+<script>
+  const canvas = document.querySelector('canvas')
+  const ctx = canvas.getContext('2d')
+  const width = document.querySelector('.width-input')
+  const clear = document.querySelector('.clear')
+  const save = document.querySelector('.save')
+  
+  document.querySelector('.minus').onclick = () => {
+    if (width.value < 6) return
+    width.value = parseInt(width.value) - 5
+  }
+  document.querySelector('.add').onclick = () => {
+    if (width.value >= 50) return
+    width.value = parseInt(width.value) + 5
+  }
+  
+  let paining = false
+  let startX = undefined
+  let startY = undefined
+  let begin = {
+    startX,
+    startY
+  }
+  
+  canvas.onmousedown = (e) => {
+    begin.startX = e.offsetX
+    begin.startY = e.offsetY
+    paining = true
+  }
+  
+  canvas.onmouseup = () => {
+    paining = false
+  }
+  
+  canvas.onmousemove = (e) => {
+    if (paining) {
+      draw(begin.startX, begin.startY, e.offsetX, e.offsetY)
+      begin.startX = e.offsetX
+      begin.startY = e.offsetY
+    }
+  }
+  
+  clear.onclick = () => {
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+  }
+  
+  save.onclick = () => {
+    const url = canvas.toDataURL()
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '画板'
+    a.target = '_blank'
+    a.click()
+    a.remove()
+  }
+  
+  function draw(startX, startY, endX, endY) {
+    ctx.beginPath()
+    ctx.moveTo(startX, startY)
+    ctx.strokeStyle = 'rgba(255,0,0,0.5)'
+    ctx.lineWidth = width.value || 5
+    ctx.lineCap = 'round'
+    ctx.lineTo(endX, endY)
+    ctx.stroke()
+    ctx.closePath()
+  }
+</script>
+<style>
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #canvas {
+    margin: auto;
+    border: 2px solid #5290f9;
+  }
+  .opera {
+    margin-top: 20px;
+  }
+  .width {
+    display: inline-block;
+  }
+  .width-input {
+    text-align: center;
+  }
+  .minus, .add {
+    display: inline-block;
+    width: 30px;
+    margin: 0 10px;
+    cursor: pointer;
+  }
+</style>
+</body>
+</html>
