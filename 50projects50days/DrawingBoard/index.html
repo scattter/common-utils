@@ -17,6 +17,9 @@
       <input class="width-input" type="number" value="5" readonly>
       <button class="add"> + </button>
     </div>
+    <div class="color">
+      <input type="color" class="color-input">
+    </div>
     <button class="clear">clear</button>
     <button class="save">save</button>
   </div>
@@ -27,7 +30,18 @@
   const width = document.querySelector('.width-input')
   const clear = document.querySelector('.clear')
   const save = document.querySelector('.save')
+  const colorEle = document.querySelector('.color-input')
   
+  let paining = false
+  let startX = undefined
+  let startY = undefined
+  let begin = {
+    startX,
+    startY
+  }
+  colorEle.value = 'black'
+  let color = colorEle.value
+
   document.querySelector('.minus').onclick = () => {
     if (width.value < 6) return
     width.value = parseInt(width.value) - 5
@@ -37,13 +51,7 @@
     width.value = parseInt(width.value) + 5
   }
   
-  let paining = false
-  let startX = undefined
-  let startY = undefined
-  let begin = {
-    startX,
-    startY
-  }
+  colorEle.onchange = (e) => color = e.target.value
   
   canvas.onmousedown = (e) => {
     begin.startX = e.offsetX
@@ -81,7 +89,7 @@
   function draw(startX, startY, endX, endY) {
     ctx.beginPath()
     ctx.moveTo(startX, startY)
-    ctx.strokeStyle = 'rgba(255,0,0,0.5)'
+    ctx.strokeStyle = color
     ctx.lineWidth = width.value || 5
     ctx.lineCap = 'round'
     ctx.lineTo(endX, endY)
@@ -89,6 +97,7 @@
     ctx.closePath()
   }
 </script>
+</body>
 <style>
   .wrapper {
     display: flex;
@@ -100,6 +109,8 @@
     border: 2px solid #5290f9;
   }
   .opera {
+    display: flex;
+    align-items: center;
     margin-top: 20px;
   }
   .width {
@@ -111,9 +122,13 @@
   .minus, .add {
     display: inline-block;
     width: 30px;
-    margin: 0 10px;
     cursor: pointer;
   }
+  .color {
+    display: inline-block;
+  }
+  button, input {
+    margin-left: 10px;
+  }
 </style>
-</body>
 </html>
