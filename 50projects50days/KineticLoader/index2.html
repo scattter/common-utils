@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="animation"></div>
+</body>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #4E5969;
+  }
+  .animation {
+    position: relative;
+    width: 100px;
+    height: 100px;
+  }
+  .animation::before,
+  .animation::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border: 50px solid transparent;
+    border-bottom-color: #fff;
+    animation: rotateA 2s linear infinite 0.5s;
+  }
+  .animation::before {
+    transform: rotate(90deg);
+    animation: rotateB 2s linear infinite;
+  }
+  @keyframes rotateA {
+    0%,
+    25% {
+      transform: rotate(0deg);
+    }
+  
+    50%,
+    75% {
+      transform: rotate(180deg);
+    }
+  
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes rotateB {
+    0%,
+    25% {
+      transform: rotate(90deg);
+    }
+  
+    50%,
+    75% {
+      transform: rotate(270deg);
+    }
+  
+    100% {
+      transform: rotate(450deg);
+    }
+  }
+</style>
+</html>
