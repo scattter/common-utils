@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="wrapper">
+  <div class="image animation-bg"></div>
+  <div class="content">
+    <div class="intro">
+      <strong class="title animation-bg">&nbsp;</strong>
+      <div class="text animation-bg">&nbsp;</div>
+    </div>
+    <div class="detail">
+      <div class="image animation-bg"></div>
+      <div class="info">
+        <strong class="title animation-bg animation-bg-text">&nbsp;</strong>
+        <div class="text animation-bg animation-bg-text">&nbsp;</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let text = []
+  const introEle = document.querySelector('.intro')
+  const infoEle = document.querySelector('.info')
+  const animationEles = document.querySelectorAll('.animation-bg')
+  const imgEles = document.querySelectorAll('.image')
+  
+  setTimeout(() => {
+    animationEles.forEach(ele => {
+      ele.classList.remove('animation-bg')
+      ele.classList.contains('animation-bg-text') && ele.classList.remove('.animation-bg-text')
+    })
+    imgEles.forEach(ele => {
+      ele.style.background = "url('bird.jpg') center no-repeat"
+      ele.style.backgroundSize = 'cover'
+    })
+    text = [
+      'first line',
+      'second line'
+    ]
+    introEle.children.item(0).innerHTML = text[0]
+    introEle.children.item(1).innerHTML = text[1]
+    infoEle.children.item(0).innerHTML = text[0]
+    infoEle.children.item(1).innerHTML = text[1]
+  }, 2000)
+</script>
+</body>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    height: 100vh;
+    background-color: #eafbff;
+  }
+  .wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    width: 300px;
+    height: 360px;
+    background-color: white;
+    overflow: hidden;
+  }
+  .wrapper .image {
+    width: 100%;
+    height: 100%;
+  }
+  .content {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    flex-direction: column;
+    width: calc(100% - 20px);
+    height: 100%;
+  }
+  .intro {
+    width: calc(100% - 20px);
+    margin-left: 10px;
+  }
+  .detail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .detail .image {
+    width: 50px;
+    height: 50px;
+    margin-left: 10px;
+    margin-right: 20px;
+    border-radius: 50%;
+  }
+  .detail .info {
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  .title,
+  .text {
+    display: block;
+    margin: 10px 0;
+  }
+  .animation-bg {
+    display: block;
+    width: 100%;
+    background-image: linear-gradient(
+      to right,
+      #f6f7f8 0%,
+      #edeef1 10%,
+      #f6f7f8 20%,
+      #f6f7f8 100%
+    );
+    background-size: 200% 100%;
+    animation: loading 1s linear infinite;
+  }
+  .animation-bg-text {
+    margin: 10px 0;
+  }
+  @keyframes loading {
+    from {
+      background-position: 50% 0;
+    }
+    to {
+      background-position: -150% 0;
+    }
+  }
+</style>
+</html>
