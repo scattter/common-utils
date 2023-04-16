@@ -7,8 +7,8 @@ function MyNew(ctro) {
   const obj = Object.create(ctro.prototype)
   // 下面的方法不建议使用
   // Object.setPrototypeOf(obj, ctro.prototype)
-  ctro.call(obj, [...arguments].slice(1))
-  return obj
+  const result = ctro.call(obj, [...arguments].slice(1))
+  return typeof result === 'object' ? result : obj
 }
 
 function Person(name) {
