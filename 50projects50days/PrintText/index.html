@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="text">this is 打字机</div>
+</body>
+<script>
+  const textElm = document.querySelector('.text')
+  const childNodes = textElm.childNodes
+  if (childNodes.length === 1 && childNodes[0].nodeType === 3) {
+    const texts = childNodes[0].textContent.split('').reverse()
+    textElm.textContent = ''
+    setInterval(() => {
+      if (texts.length === 0) {
+        return
+      }
+      textElm.textContent += texts.pop()
+    }, 100)
+  } else {
+    throw new Error('target element is not a text node')
+  }
+</script>
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  .text {
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 24px;
+    text-align: center;
+    background-color: aqua;
+    border-radius: 20px;
+  }
+  .text::after {
+    content: '_';
+    margin-left: 4px;
+    opacity: 1;
+    animation: flash 0.7s infinite;
+  }
+  @keyframes flash {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+</style>
+</html>
