@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="wrapper">
+  <div class="start-time">开始时间 2023-5-25 19:00:00</div>
+  <div class="time"></div>
+  <div class="end-time">结束时间 2223-8-26 19:00:00</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+<script>
+    const timeEle = document.querySelector('.time')
+    function addZero(num) {
+        return num < 10 ? '0' + num : num
+    }
+    countdown()
+    function countdown() {
+        let timer = null
+        const startTime = dayjs('2023-5-25 19:00:00')
+        const endTime = dayjs('2223-8-26 19:00:00')
+        const curTime = dayjs()
+        // 距离开始时间和结束时间差
+        let beginDiff = startTime.diff(curTime, 'seconds')
+        let endDiff = endTime.diff(curTime, 'seconds')
+        // 根据时间差判断是活动开始还是未开始
+        let leftTime = beginDiff > 0 ? beginDiff : endDiff;
+        // 计算 天 时 分 秒
+        let day = addZero(Math.floor(leftTime / (24 * 60 * 60)))
+        let hour = addZero(Math.floor(leftTime / (60 * 60) % 24))
+        let minute = addZero(Math.floor(leftTime / 60 % 60))
+        let second = addZero(Math.floor(leftTime % 60))
+
+        // 展示文本
+        if (beginDiff > 0) {
+            timeEle.innerText = `距活动开始 ${day}天 ${hour}时 ${minute}分 ${second}秒`;
+            timer = setTimeout(countdown, 1000);
+        } else if (leftTime <= 0) {
+            clearTimeout(timer);
+        } else {
+            timeEle.innerText = `距活动结束 ${day}天 ${hour}时 ${minute}分 ${second}秒`;
+            timer = setTimeout(countdown, 1000);
+        }
+    }
+</script>
+</body>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        width: 100vw;
+        height: 100vh;
+    }
+    .countdown {
+        margin: 10px 0;
+        font-size: 30px;
+    }
+    .time {
+        color: red;
+        font-size: 40px;
+    }
+</style>
+</html>
