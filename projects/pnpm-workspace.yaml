@@ -3,4 +3,5 @@ packages:
   - 'GitlabMrNotice'
   - 'ScheduleJobAgenda'
   - 'TypeScriptStudy'
+  - 'ssr-study'
 
