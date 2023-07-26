@@ -1,4 +1,5 @@
-import {Link, Route, Routes} from "react-router-dom";
+import {Link} from "react-router-dom";
+import Spa from "./router/Spa.tsx";
 
 // find all page
 const pages = import.meta.glob('./pages/**/*.tsx', { eager: true })
@@ -32,11 +33,7 @@ function App() {
             );
           })}
         </ul>
-        <Routes>
-          {routes.map(({ path, component: RouteComp }) => {
-            return <Route key={path} path={path} element={<RouteComp />}></Route>;
-          })}
-        </Routes>
+        <Spa />
       </>
   )
 }

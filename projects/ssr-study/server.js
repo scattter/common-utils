@@ -28,7 +28,6 @@ if (!isProduction) {
 app.get("*", async (req, res) => {
   let template;
   let render;
-  console.log('---', ssrManifest)
 
   // 如果是生产环境，直接读取打包后的index.html和server-entry.js
   // 开发环境实时编译
@@ -41,7 +40,7 @@ app.get("*", async (req, res) => {
     render = (await vite.ssrLoadModule("/src/server-entry.tsx")).render
   }
 
-  const html = await render(req.url);
+  const { html, data: ssrData } = await render(req.url);
 
   if (ssrManifest.url) {
     res.redirect(301, ssrManifest.url);
@@ -49,7 +48,9 @@ app.get("*", async (req, res) => {
   }
 
   // 给index.html的id为root标签中添加 <!--APP_HTML-->，做为后边要替换的标志
-  const responseHtml = template.replace("<!--APP_HTML-->", html);
+  let responseHtml = template.replace("<!--APP_HTML-->", html);
+  // 数据脱水
+  responseHtml = responseHtml.replace("<!--SSR_DATA-->", `window.ssrData = ${JSON.stringify(ssrData)}`);
   res.status(200).set({ "Content-Type": "text/html" }).end(responseHtml);
 });
 app.listen(5173, () => {});

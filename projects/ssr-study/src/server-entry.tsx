@@ -1,15 +1,22 @@
 //服务端渲染的入口
-import React from "react";
 import ReactDOMServer from "react-dom/server";
-import { StaticRouter } from "react-router-dom/server";
+import RootApp from "./ssr/RootApp.tsx";
 import App from "./App.tsx";
 
 export function render(url:string) {
-  return ReactDOMServer.renderToString(
-    <StaticRouter location={url}>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </StaticRouter>
-  );
+  const ssrData = {
+    data: {
+      url: undefined as string | undefined,
+    }
+  }
+  ssrData.data.url = url === '/home' ? undefined : `ssr render`
+  const html = ReactDOMServer.renderToString(
+    <RootApp ssr ssrData={ssrData.data} ssrPathname={url}>
+      <App />
+    </RootApp>
+  )
+  return {
+    html,
+    data: ssrData.data
+  };
 }

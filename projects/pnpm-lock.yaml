@@ -56,6 +56,7 @@ importers:
 
   ssr-study:
     specifiers:
+      '@remix-run/router': ^1.7.2
       '@types/react': ^18.2.15
       '@types/react-dom': ^18.2.7
       '@typescript-eslint/eslint-plugin': ^6.0.0
@@ -73,6 +74,7 @@ importers:
       typescript: ^5.0.2
       vite: ^4.4.5
     dependencies:
+      '@remix-run/router': 1.7.2
       express: 4.18.2
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0

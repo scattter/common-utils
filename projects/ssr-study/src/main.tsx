@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import {BrowserRouter} from "react-router-dom";
+import {SSRProvider} from "./ssr/SSRProvider.tsx";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
-    <React.StrictMode>
+ReactDOM.hydrateRoot(document.getElementById('root')!,  <BrowserRouter>
+  <React.StrictMode>
+    <SSRProvider>
       <App />
-    </React.StrictMode>
-  </BrowserRouter>
-)
+    </SSRProvider>
+  </React.StrictMode>
+</BrowserRouter>)
