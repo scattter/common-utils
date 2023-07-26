@@ -1,5 +1,6 @@
 import fs from "fs";
 import express from "express";
+import { SRR_ROUTERS } from "./src/router/routers.js";
 const app = express();
 
 // 通过vite创建server服务
@@ -26,6 +27,7 @@ if (!isProduction) {
 }
 
 app.get("*", async (req, res) => {
+  const url = req.originalUrl;
   let template;
   let render;
 
@@ -36,11 +38,16 @@ app.get("*", async (req, res) => {
     render = (await import("./dist/server/server-entry.js")).render
   } else {
     template = fs.readFileSync("index.html", "utf8");
-    template = await vite.transformIndexHtml(req.url, template)
+    template = await vite.transformIndexHtml(url, template)
     render = (await vite.ssrLoadModule("/src/server-entry.tsx")).render
   }
 
-  const { html, data: ssrData } = await render(req.url);
+  if (!SRR_ROUTERS.includes(url)) {
+    res.status(200).set({ "Content-Type": "text/html" }).end(template);
+    return;
+  }
+
+  const { html, data: ssrData } = await render(url);
 
   if (ssrManifest.url) {
     res.redirect(301, ssrManifest.url);

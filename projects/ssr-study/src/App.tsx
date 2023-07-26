@@ -3,7 +3,6 @@ import Spa from "./router/Spa.tsx";
 
 // find all page
 const pages = import.meta.glob('./pages/**/*.tsx', { eager: true })
-console.log(pages)
 
 const routes = Object.keys(pages).map((path) => {
   const name = path.match(/\.\/pages(.*)\/index\.tsx/)![1]
@@ -13,7 +12,6 @@ const routes = Object.keys(pages).map((path) => {
     component: (pages[path] as any).default as React.ComponentType,
   }
 });
-console.log(routes)
 
 function App() {
 
