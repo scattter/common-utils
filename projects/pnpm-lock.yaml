@@ -57,6 +57,7 @@ importers:
   ssr-study:
     specifiers:
       '@remix-run/router': ^1.7.2
+      '@rollup/pluginutils': ^5.0.2
       '@types/react': ^18.2.15
       '@types/react-dom': ^18.2.7
       '@typescript-eslint/eslint-plugin': ^6.0.0
@@ -80,6 +81,7 @@ importers:
       react-dom: 18.2.0_react@18.2.0
       react-router-dom: 6.14.2_biqbaboplfbrettd7655fr4n2y
     devDependencies:
+      '@rollup/pluginutils': 5.0.2
       '@types/react': 18.2.15
       '@types/react-dom': 18.2.7
       '@typescript-eslint/eslint-plugin': 6.1.0_ddwllfjrppzgeb7ohd2ng4d3za
@@ -901,6 +903,20 @@ packages:
     engines: {node: '>=14'}
     dev: false
 
+  /@rollup/pluginutils/5.0.2:
+    resolution: {integrity: sha512-pTd9rIsP92h+B6wWwFbW8RkZv4hiR/xKsqre4SIuAOaOEQRxi0lqLke9k2/7WegC85GgUs9pjmOjCUi3In4vwA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      rollup: ^1.20.0||^2.0.0||^3.0.0
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      '@types/estree': 1.0.1
+      estree-walker: 2.0.2
+      picomatch: 2.3.1
+    dev: true
+
   /@smithy/abort-controller/1.0.2:
     resolution: {integrity: sha512-tb2h0b+JvMee+eAxTmhnyqyNk51UXIK949HnE14lFeezKsVJTB30maan+CO2IMwnig2wVYQH84B5qk6ylmKCuA==}
     engines: {node: '>=14.0.0'}
@@ -1403,6 +1419,10 @@ packages:
     dependencies:
       '@types/ms': 0.7.31
     dev: false
+
+  /@types/estree/1.0.1:
+    resolution: {integrity: sha512-LG4opVs2ANWZ1TJoKc937iMmNstM/d0ae1vNbnBvBhqCSezgVUOzcLCqbI5elV8Vy6WKwKjaqR+zO9VKirBBCA==}
+    dev: true
 
   /@types/json-schema/7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
@@ -2122,6 +2142,10 @@ packages:
   /estraverse/5.3.0:
     resolution: {integrity: sha512-MMdARuVEQziNTeJD8DgMqmhwR11BRQ/cBP+pLtYdSTnf3MIO8fFeiINEbX36ZdNlfU/7A9f3gUw49B3oQsvwBA==}
     engines: {node: '>=4.0'}
+    dev: true
+
+  /estree-walker/2.0.2:
+    resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
     dev: true
 
   /esutils/2.0.3:
