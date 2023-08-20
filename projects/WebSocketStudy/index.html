@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div>
+  <h1>web-socket study</h1>
+  <label>
+    <input type="text">
+  </label>
+  <button>send</button>
+  <div id="messages"></div>
+</div>
+</body>
+<style>
+  #messages {
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    width: 80vw;
+    height: 70vh;
+    overflow-y: scroll;
+    background-color: antiquewhite;
+    margin-top: 20px;
+    padding: 10px;
+  }
+</style>
+<script>
+  const inputValue = ''
+  const inputEle = document.querySelector('input')
+  const btnEle = document.querySelector('button')
+  const messagesEle = document.querySelector('#messages')
+  
+  const ws = new WebSocket('ws://localhost:8080')
+  ws.onopen = () => {
+    console.log('open')
+  }
+  ws.onmessage = (e) => {
+    console.log('message', e.data)
+    prependEle(e.data, 'server')
+  }
+  ws.onerror = (e) => {
+    console.log('error', e)
+  }
+  
+  btnEle.addEventListener('click', () => {
+    const inputValue = inputEle.value
+    prependEle(inputValue, 'client')
+    // reset input value
+    inputEle.value = ''
+    ws.send(inputValue)
+  })
+  
+  function prependEle(data, source) {
+    const msgEle = document.createElement('div')
+    msgEle.style = `align-self: ${source === 'client' ? 'flex-end' : 'flex-start'}`
+    msgEle.textContent = source === 'client' ? data + ' :client' : 'server: ' + data
+    messagesEle.appendChild(msgEle)
+  }
+</script>
+</html>
