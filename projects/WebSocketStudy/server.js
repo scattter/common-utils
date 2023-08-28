@@ -15,7 +15,7 @@ function onConnect(ws) {
         const receiveData = isBinary ? message : message.toString()
         setTimeout(() => {
             for (let client of clients) {
-                client.readyState === 1 &&  client.send(receiveData)
+                client.readyState === 1 && client.send(receiveData === 'ping' ? 'pang' : receiveData)
             }
         }, 1000)
     })

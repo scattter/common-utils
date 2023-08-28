@@ -13,7 +13,7 @@
   <label>
     <input type="text">
   </label>
-  <button>send</button>
+  <button class="send">send</button>
   <div id="messages"></div>
 </div>
 </body>
@@ -31,31 +31,63 @@
   }
 </style>
 <script>
+  // 心跳间隔, 重连间隔
+  const HEART_TIME = 3000, RECONNECT_TIME = 3000
+  let heartTimer = null
+  
   const inputValue = ''
   const inputEle = document.querySelector('input')
-  const btnEle = document.querySelector('button')
+  const sendEle = document.querySelector('.send')
   const messagesEle = document.querySelector('#messages')
   
-  const ws = new WebSocket('ws://localhost:8080')
-  ws.onopen = () => {
-    console.log('open')
+  function webSocketInit(service) {
+    const ws = new WebSocket(service)
+    ws.onopen = () => {
+      console.log('open')
+      heartCheck()
+    }
+    ws.onmessage = (e) => {
+      console.log('message', e.data)
+      e.data !== 'pang' && prependEle(e.data, 'server')
+    }
+    ws.onerror = (e) => {
+      console.log('error', e)
+      reConnect()
+    }
+    
+    function close() {
+      console.log('close')
+      ws.close()
+    }
+
+    function reConnect() {
+      setTimeout(function(){
+        webSocketInit(service);
+      }, RECONNECT_TIME);
+    }
+
+    function heartCheck() {
+      heartTimer = setInterval(() => {
+        if (ws.readyState !== 1) {
+          clearInterval(heartTimer)
+          webSocketInit(service)
+        } else {
+          ws.send('ping')
+        }
+      }, HEART_TIME)
+    }
   }
-  ws.onmessage = (e) => {
-    console.log('message', e.data)
-    prependEle(e.data, 'server')
-  }
-  ws.onerror = (e) => {
-    console.log('error', e)
-  }
+
+  webSocketInit('ws://localhost:8080')
   
-  btnEle.addEventListener('click', () => {
+  sendEle.addEventListener('click', () => {
     const inputValue = inputEle.value
     prependEle(inputValue, 'client')
     // reset input value
     inputEle.value = ''
     ws.send(inputValue)
   })
-  
+
   function prependEle(data, source) {
     const msgEle = document.createElement('div')
     msgEle.style = `align-self: ${source === 'client' ? 'flex-end' : 'flex-start'}`
