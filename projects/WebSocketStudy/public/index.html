@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<h2>server send event</h2>
+<div class="backend"></div>
+<ul></ul>
+</body>
+<script>
+  const ele = document.querySelector('.backend')
+  const ul = document.querySelector('ul')
+  const eventSource = new EventSource('/subscribe')
+  eventSource.addEventListener('connected', (e) => {
+    ele.innerText = e.data
+  })
+  eventSource.addEventListener('open', (e) => {
+    console.log('open', e)
+  })
+  eventSource.addEventListener('message', (e) => {
+    const listItem = document.createElement('li');
+
+    listItem.innerText = event.data;
+    ul.append(listItem)
+  })
+  eventSource.addEventListener('error', (e) => {
+    console.log('error', e)
+  })
+</script>
+</html>
