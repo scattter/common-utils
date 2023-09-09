@@ -1,5 +1,5 @@
-import React, { memo } from 'react';
-import {useSSR} from "../../../hooks/useSSR.ts";
+import { memo } from 'react';
+import {useSSR} from "../../../hooks/useSSR";
 
 export interface IProps {
 
