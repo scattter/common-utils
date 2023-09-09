@@ -1,4 +1,5 @@
 const express = require('express')
+const {getAllInfo} = require("./info");
 
 const app = express()
 
@@ -21,8 +22,9 @@ app.get('/subscribe', (req, res) => {
 
   // Send a subsequent message every five seconds
   setInterval(() => {
+    const info = getAllInfo();
     res.write('event: message\n');
-    res.write(`data: ${new Date().toLocaleString()}\n`);
+    res.write(`data: ${info.usage}\n`);
     res.write(`id: ${counter}\n\n`);
     counter += 1;
   }, 5000);
