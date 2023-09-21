@@ -1,25 +1,42 @@
 const ws = new require('ws')
+const fs = require('fs')
 const http = require('http')
 const wss = new ws.Server({ noServer: true })
 
 const clients = new Set()
-http.createServer((req) => {
-    wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onConnect)
-}).listen(8080)
+const server = http.createServer((req, res) => {
+  if (req.url === '/ws') {
+    res.end(fs.readFileSync('./index.html'))
+  } else {
+    res.end('hello')
+  }
+})
 
-function onConnect(ws) {
-    clients.add(ws)
-    console.log('new client connect')
-    ws.on('message', (message, isBinary) => {
-        // use isBinary to confirm message type
-        const receiveData = isBinary ? message : message.toString()
-        setTimeout(() => {
-            for (let client of clients) {
-                client.readyState === 1 && client.send(receiveData === 'ping' ? 'pang' : receiveData)
-            }
-        }, 1000)
-    })
-    ws.on('close', () => {
-        clients.delete(ws)
-    })
+server.on('upgrade', (req, socket, head) => {
+  wss.handleUpgrade(req, socket, head, onConnect);
+});
+
+server.listen(8080)
+function onConnect(ws, req) {
+  clients.add(ws)
+  ws.on('message', (message, isBinary) => {
+    // use isBinary to confirm message type
+    const receiveData = isBinary ? message : message.toString()
+    // 广播给所有非自身的客户端
+    if (receiveData !== 'ping') {
+      for (let client of clients) {
+        ws !== client && client.send(`${req.socket.remotePort}: ${receiveData}`)
+      }
+    }
+    setTimeout(() => {
+      if (receiveData !== 'ping') {
+        for (let client of clients) {
+          client.readyState === 1 && client.send('pang')
+        }
+      }
+    }, 1000)
+  })
+  ws.on('close', () => {
+    clients.delete(ws)
+  })
 }

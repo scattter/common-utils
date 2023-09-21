@@ -47,7 +47,6 @@
       heartCheck()
     }
     ws.onmessage = (e) => {
-      console.log('message', e.data)
       e.data !== 'pang' && prependEle(e.data, 'server')
     }
     ws.onerror = (e) => {
@@ -76,9 +75,11 @@
         }
       }, HEART_TIME)
     }
+    
+    return ws
   }
 
-  webSocketInit('ws://localhost:8080')
+  const ws= webSocketInit('ws://localhost:8080')
   
   sendEle.addEventListener('click', () => {
     const inputValue = inputEle.value
@@ -91,7 +92,7 @@
   function prependEle(data, source) {
     const msgEle = document.createElement('div')
     msgEle.style = `align-self: ${source === 'client' ? 'flex-end' : 'flex-start'}`
-    msgEle.textContent = source === 'client' ? data + ' :client' : 'server: ' + data
+    msgEle.textContent = source === 'client' ? data + ' :client' : data
     messagesEle.appendChild(msgEle)
   }
 </script>
