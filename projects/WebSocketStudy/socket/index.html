@@ -9,6 +9,7 @@
 </head>
 <body>
 <h1>hello</h1>
+<input type="text">
 <button>send</button>
 <ul></ul>
 </body>
@@ -16,9 +17,14 @@
 <script>
   const socket = io()
   const button = document.querySelector('button')
+  const input = document.querySelector('input')
   const ul = document.querySelector('ul')
   button.addEventListener('click', () => {
-    socket.emit('send', 'hello')
+    const li = document.createElement('li')
+    li.textContent = '我说: ' + input.value
+    ul.append(li)
+    socket.emit('send', input.value)
+    input.value = ''
   })
   
   socket.on('receiver', (msg) => {

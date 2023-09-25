@@ -12,9 +12,8 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('a user connected', socket.id);
-  socket.on('chat message', (msg) => {
-    console.log(msg, '来活了')
-    io.emit('receiver', '发送消息了')
+  socket.on('send', (msg) => {
+    socket.broadcast.emit('receiver', `客户端${socket.id}说: ${msg}`)
   })
 })
 
