@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<div class="wrapper">
+  <div class="card">
+    <div class="bg">
+      <span>left</span>
+      <span>right</span>
+    </div>
+    <div class="again"></div>
+    <div class="close"></div>
+  </div>
+  <button class="open">点我</button>
+</div>
+</body>
+<script>
+  const btn = document.querySelector('.open')
+  const card = document.querySelector('.card')
+  btn.addEventListener('click', () => {
+    if (card.classList.contains('card-rotate')) {
+      card.classList.remove('card-rotate')
+    } else {
+      card.classList.add('card-rotate')
+    }
+  })
+</script>
+<style>
+  body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  .wrapper {
+    position: relative;
+    width: 80vw;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #eafbff;
+  }
+  .card {
+    display: flex;
+    width: 50%;
+    height: 60%;
+    position: relative;
+    background-color: #c2e3b4;
+    transition: transform 3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+  }
+  .card-rotate {
+    transform: rotateY(720deg);
+  }
+  .open {
+    align-items: flex-start;
+  }
+  .bg {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 30px;
+  }
+</style>
+</html>
