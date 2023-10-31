@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>下载</title>
+</head>
+<body>
+<div class="wrapper">
+  <div class="content">
+    <label for="url">URL地址: </label>
+    <input name="url" type="text" class="url">
+  </div>
+  <div class="content">
+    <label for="path">下载到: </label>
+    <input name="path" type="text" class="path">
+  </div>
+  <button class="download">下载</button>
+  <div class="detail">
+    下载详情: <span class="speed">暂未下载</span>
+  </div>
+</div>
+</body>
+<script>
+  const urlEle = document.querySelector('.url')
+  const pathEle = document.querySelector('.path')
+  const downloadEle = document.querySelector('.download')
+  const speedEle = document.querySelector('.speed')
+  
+  const xhr = new XMLHttpRequest()
+  xhr.timeout = 10000; // timeout 单位是 ms，此处即 10 秒
+  
+  let sse = null
+  const createListen = () => {
+    sse = new EventSource('/subscribe')
+    sse.addEventListener('connected', (e) => {
+      console.log('connected')
+    })
+    sse.addEventListener('open', (e) => {
+      console.log('open')
+    })
+    sse.addEventListener('message', (e) => {
+      const { data } = e
+      speedEle.innerText = data
+    })
+
+    sse.addEventListener('error', (e) => {
+      speedEle.innerText = '下载失败'
+      sse.close()
+      sse = null
+    })
+  }
+  
+  downloadEle.addEventListener('click', () => {
+    const url = urlEle.value
+    const filePath = pathEle.value
+    if (!url || !filePath) {
+      console.log('请输入url和filePath')
+      return
+    }
+    const data = JSON.stringify({
+      url,
+      filePath
+    })
+    xhr.open('POST', `/download`)
+    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+    xhr.send(data)
+    xhr.onload = function() {
+      if (xhr.status !== 200) {
+        // 错误警告 例如 404: Not Found
+        speedEle.innerText = `Error ${xhr.status}: ${xhr.statusText}`;
+      } else {
+        // 创建监听
+        createListen()
+      }
+    };
+  })
+</script>
+<style>
+    body {
+        margin: 0;
+    }
+    .wrapper {
+        width: 400px;
+        height: 100vh;
+        margin: 30px auto 0 auto;
+    }
+    .content {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: 30px;
+        margin: 10px 0;
+    }
+    label {
+        width: 100px;
+    }
+    input {
+        flex: 1;
+    }
+    .download {
+        width: 100%;
+        margin: 10px auto;
+    }
+</style>
+</html>
