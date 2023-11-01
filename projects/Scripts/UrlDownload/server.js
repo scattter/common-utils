@@ -2,6 +2,7 @@ const express = require('express')
 
 const fs = require('fs')
 const { handleDownload } = require('./index')
+const {queryFolderInfo} = require("../QueryFolderInfo");
 
 const app = express()
 let sseResponse = null
@@ -50,6 +51,17 @@ app.get('/subscribe', (req, res) => {
 
   // Close the connection when the client disconnects
   req.on('close', () => res.end('OK'))
+})
+
+app.post('/folderInfo', (req, res) => {
+  req.on('data', async (chunk) => {
+    const { path } = JSON.parse(chunk)
+    const filesInfo = await queryFolderInfo(path);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      data: filesInfo
+    }))
+  })
 })
 
 app.get('*', (req, res) => {

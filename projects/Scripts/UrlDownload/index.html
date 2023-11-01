@@ -21,6 +21,12 @@
   <div class="detail">
     下载详情: <span class="speed">暂未下载</span>
   </div>
+  <div>
+    <span>宿主端文件夹信息</span>
+    <button class="query-folder-info">向上一级</button>
+  </div>
+  <div class="base-folder"></div>
+  <div class="file-infos"></div>
 </div>
 </body>
 <script>
@@ -28,6 +34,8 @@
   const pathEle = document.querySelector('.path')
   const downloadEle = document.querySelector('.download')
   const speedEle = document.querySelector('.speed')
+  const baseFolderEle = document.querySelector('.base-folder')
+  const queryFolderInfoEle = document.querySelector('.query-folder-info')
   
   const xhr = new XMLHttpRequest()
   xhr.timeout = 10000; // timeout 单位是 ms，此处即 10 秒
@@ -77,6 +85,54 @@
       }
     };
   })
+  
+  const queryFolderInfo = (path = '/') => {
+    xhr.open('POST', '/folderInfo')
+    xhr.send(JSON.stringify({path}))
+    xhr.onload = function() {
+      if (xhr.status !== 200) {
+      } else {
+        // 展示文件
+        const { data } = JSON.parse(xhr.response)
+        const { files, basePath } = data
+        renderFileInfos(files)
+        baseFolderEle.innerText = basePath
+      }
+    };
+  }
+  queryFolderInfo('/Users/zhangke/Desktop/test')
+  
+  queryFolderInfoEle.addEventListener('click', () => {
+    if (baseFolderEle.innerText === '/Users/zhangke/Desktop/test') {
+      return
+    }
+    const parentPath = baseFolderEle.innerText.split('/').slice(0, -1).join('/')
+    queryFolderInfo(parentPath)
+  })
+  
+  const renderFileInfos = (files) => {
+    const fileInfosEle = document.querySelector('.file-infos')
+    if (files.length === 0) {
+      fileInfosEle.innerHTML = '暂无文件'
+      return
+    }
+    fileInfosEle.innerHTML = files.map(item => {
+      if (item.isDirectory) {
+        return `<li class="directory">${item.name}</li>`
+      } else {
+        return `<p>${item.name}</p>`
+      }
+    }).join('')
+    const directoryEles = document.querySelectorAll('.directory')
+    directoryEles.forEach((ele) => {
+      ele.addEventListener('click', (e) => {
+        const { target } = e
+        const path = `${baseFolderEle.innerText}/${target.innerText}`
+        queryFolderInfo(path)
+      })
+    })
+  }
+  
 </script>
 <style>
     body {
@@ -103,6 +159,17 @@
     .download {
         width: 100%;
         margin: 10px auto;
+    }
+    .file-infos {
+        width: 100%;
+        height: 400px;
+        overflow: auto;
+    }
+    .directory {
+        color: #646cff;
+    }
+    .directory:hover {
+        cursor: pointer;
     }
 </style>
 </html>
