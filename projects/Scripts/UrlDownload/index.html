@@ -9,33 +9,35 @@
 </head>
 <body>
 <div class="wrapper">
+  <h2>链接直下电影 Demo</h2>
   <div class="content">
     <label for="url">URL地址: </label>
     <input name="url" type="text" class="url">
   </div>
-  <div class="content">
-    <label for="path">下载到: </label>
-    <input name="path" type="text" class="path">
-  </div>
-  <button class="download">下载</button>
-  <div class="detail">
-    下载详情: <span class="speed">暂未下载</span>
-  </div>
-  <div>
+  <div class="operations">
     <span>宿主端文件夹信息</span>
-    <button class="query-folder-info">向上一级</button>
+    <button class="operation-btn query-folder-info">向上一级</button>
+    <button class="operation-btn refresh-folder-info">刷新</button>
   </div>
+  <button class="download-btn">下载</button>
   <div class="base-folder"></div>
-  <div class="file-infos"></div>
+  <div class="download-wrapper">
+    <div class="file-infos"></div>
+    <div class="split"></div>
+    <div class="download-detail">
+      下载详情: <span class="speed">暂未下载</span>
+    </div>
+  </div>
 </div>
 </body>
 <script>
   const urlEle = document.querySelector('.url')
   const pathEle = document.querySelector('.path')
-  const downloadEle = document.querySelector('.download')
+  const downloadEle = document.querySelector('.download-btn')
   const speedEle = document.querySelector('.speed')
   const baseFolderEle = document.querySelector('.base-folder')
   const queryFolderInfoEle = document.querySelector('.query-folder-info')
+  const refreshFolderInfoEle = document.querySelector('.refresh-folder-info')
   
   const xhr = new XMLHttpRequest()
   xhr.timeout = 10000; // timeout 单位是 ms，此处即 10 秒
@@ -63,9 +65,9 @@
   
   downloadEle.addEventListener('click', () => {
     const url = urlEle.value
-    const filePath = pathEle.value
-    if (!url || !filePath) {
-      console.log('请输入url和filePath')
+    const filePath = baseFolderEle.innerText
+    if (!url) {
+      alert('请输入url')
       return
     }
     const data = JSON.stringify({
@@ -109,6 +111,10 @@
     const parentPath = baseFolderEle.innerText.split('/').slice(0, -1).join('/')
     queryFolderInfo(parentPath)
   })
+
+  refreshFolderInfoEle.addEventListener('click', () => {
+    queryFolderInfo(baseFolderEle.innerText)
+  })
   
   const renderFileInfos = (files) => {
     const fileInfosEle = document.querySelector('.file-infos')
@@ -140,8 +146,8 @@
     }
     .wrapper {
         width: 400px;
-        height: 100vh;
-        margin: 30px auto 0 auto;
+        height: 100%;
+        margin: 50px auto 0 auto;
     }
     .content {
         display: flex;
@@ -156,14 +162,38 @@
     input {
         flex: 1;
     }
-    .download {
+    .download-btn {
         width: 100%;
         margin: 10px auto;
     }
+    .download-wrapper {
+        display: flex;
+        justify-content: space-between;
+    }
     .file-infos {
-        width: 100%;
+        width: 45%;
         height: 400px;
         overflow: auto;
+    }
+    .split {
+        width: 2px;
+        height: 300px;
+        background-color: #ccc;
+    }
+    .download-detail {
+        width: 45%;
+    }
+    .operations {
+        display: flex;
+        align-items: center;
+        height: 30px;
+        margin: 10px 0;
+    }
+    .operation-btn {
+        margin-left: 10px;
+    }
+    .base-folder {
+        margin-bottom: 10px;
     }
     .directory {
         color: #646cff;
