@@ -1,15 +1,16 @@
 const express = require('express')
 
 const fs = require('fs')
-const { handleDownload } = require('./index')
-const {queryFolderInfo} = require("../QueryFolderInfo");
+const { handleDownload } = require('./UrlDownload')
+const {queryFolderInfo} = require("./QueryFolderInfo");
 
 const app = express()
+app.use(express.static('public'))
 let sseResponse = null
 
 app.get('/', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/html' });
-  res.end(fs.readFileSync('UrlDownload/index.html'))
+  res.end(fs.readFileSync('index.html'))
 })
 
 app.post('/download', (req, res) => {

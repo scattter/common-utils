@@ -13,6 +13,16 @@ importers:
       axios: 0.27.2
       dayjs: 1.11.9
 
+  DirectDownload:
+    specifiers:
+      axios: ^1.6.0
+      express: ^4.18.2
+      nodemon: ^3.0.1
+    dependencies:
+      axios: 1.6.0
+      express: 4.18.2
+      nodemon: 3.0.1
+
   GitlabMrNotice:
     specifiers:
       axios: ^0.27.2
@@ -40,16 +50,6 @@ importers:
       mongodb: 4.16.0
       mysql2: 2.3.3
       sequelize: 7.0.0-alpha2.2_mysql2@2.3.3
-
-  Scripts:
-    specifiers:
-      axios: ^1.6.0
-      express: ^4.18.2
-      nodemon: ^3.0.1
-    dependencies:
-      axios: 1.6.0
-      express: 4.18.2
-      nodemon: 3.0.1
 
   TypeScriptStudy:
     specifiers:
