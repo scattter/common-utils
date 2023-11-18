@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notification</title>
+</head>
+<body>
+<button class="btn">click here to add notification</button>
+</body>
+<script>
+  const MAX_COUNT = 5;
+  const btn = document.querySelector('.btn');
+  let removeIndex = 0;
+  const NotificationList = new Proxy([], {
+    set(target, p, newValue, receiver) {
+      /**
+       * 当数组长度达到最大值时，删除第一个元素, 重新构建其他元素
+       */
+      if (p >= MAX_COUNT) {
+        removeIndex++;
+        // 先移除全部
+        document.querySelectorAll(`.notification-item`).forEach((item) => {
+          item.remove();
+        });
+        // 再添加符合条件的
+        target.filter(item => item.id >= removeIndex - 1).forEach((item) => {
+          (item.id > removeIndex - 1) && document.body.append(item.item(item.id - removeIndex));
+        });
+      }
+      /**
+       * 添加最新一个元素
+       */
+      newValue.item && document.body.append(newValue.item(p - removeIndex));
+      return Reflect.set(target, p, newValue, receiver);
+    }
+  });
+
+  const NotificationItem = (id) => {
+    const ele = document.createElement('div');
+    ele.setAttribute('class', `notification-item notification-item-${id + removeIndex}`);
+    ele.style = `position: fixed; top: ${id % MAX_COUNT * 120}px; right: 0; width: 200px; height: 100px; background-color: red;`;
+    ele.innerText = `notification-${id + removeIndex}`;
+    return ele
+  }
+
+  let id = 0
+  const popup = () => {
+    const item = (id) => NotificationItem(id);
+    NotificationList.push({ id, item });
+    id++;
+  }
+  
+  btn.addEventListener('click', () => {
+    popup();
+  });
+</script>
+</html>
