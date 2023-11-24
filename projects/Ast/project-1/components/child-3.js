@@ -1,0 +1,1 @@
+export const childThree = 'application 1 child'

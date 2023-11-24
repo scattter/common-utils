@@ -5,4 +5,5 @@ packages:
   - 'TypeScriptStudy'
   - 'Ssr-study'
   - 'DirectDownload'
+  - 'Ast'
 
