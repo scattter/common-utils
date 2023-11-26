@@ -23,7 +23,10 @@ const parseFile = (code) => {
   })
   traverse(ast, {
     ImportDeclaration(path) {
-      moduleNameSet.add(path.node.source.value)
+      moduleNameSet.add({
+        moduleName: path.node.source.value,
+        line: path.node.loc.start.line,
+      })
     }
   })
   return moduleNameSet
@@ -35,36 +38,46 @@ const getOriginPath = (moduleName, sourceFile) => {
   //
   // }
   // 相对径路文件
-  const dir = path.dirname(sourceFile);
+  const dir = path.dirname(sourceFile.moduleName);
   return path.resolve(dir, moduleName);
 }
 
 // 查找循环依赖
 const findCycleModule = async (file, chain) => {
-  if (chain.includes(file)) {
-    callerChain.set(file, [...chain, file])
+  const {moduleName, line} = file
+  const pureChain = chain.map((item) => item.moduleName)
+  if (pureChain.includes(moduleName)) {
+    callerChain.set(moduleName, [...chain, file])
     return
   }
 
-  if (callerChain && callerChain.has(file)) {
+  if (callerChain && callerChain.has(moduleName)) {
     return
   }
 
   const originPath = new Set()
   // 读取入口文件
-  const code = await fs.readFile(file, 'utf-8')
+  const code = await fs.readFile(moduleName, 'utf-8')
   // 解析入口文件
   const moduleNameSet = parseFile(code)
 
   // 递归解析依赖, 寻找源地址
-  for (const moduleName of moduleNameSet) {
-    const modulePath = getOriginPath(moduleName, file)
-    originPath.add(modulePath)
+  for (const module of moduleNameSet) {
+    const {moduleName, line} = module
+    const originModuleName = getOriginPath(moduleName, file)
+    originPath.add({
+      moduleName: originModuleName,
+      line,
+    })
   }
 
-  // 查找循环依赖
+  // 递归到当前文件内部, 查找循环依赖
+  // 递归时初始文件行数要更改为当前module的行数
   for (const cFile of originPath) {
-    await findCycleModule(cFile, [...chain, file])
+    await findCycleModule(cFile, [...chain, {
+      moduleName: file.moduleName,
+      line: cFile.line,
+    }])
   }
 }
 
@@ -74,10 +87,20 @@ const handleFile = async () => {
     const files = await glob(`${workspace}/project-1/**/entry.js`)
 
     // 查找循环依赖
-    await findCycleModule(files[0], [])
+    await findCycleModule({
+      moduleName: files[0],
+      line: 1,
+    }, [])
 
     // 打印循环依赖信息
-    console.log(callerChain)
+    for (const [key, value] of callerChain) {
+      console.log('循环依赖存在于文件: ', key)
+      console.log('依赖链: ')
+      value.forEach((item) => {
+        console.log(`---> ${item.moduleName}: ${item.line}`)
+      })
+      console.log('\n')
+    }
   } catch (e) {
     console.log(e)
   }
