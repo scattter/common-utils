@@ -44,6 +44,7 @@
     ctx.arc(x, y, 50, 0, 2 * Math.PI);
     ctx.fillStyle = color;
     ctx.fill();
+    ctx.closePath()
   }
   
   const getPosition = () => {
@@ -57,9 +58,6 @@
       y,
       top: y + barHeight + screenY, // 相对屏幕坐标
       left: x + screenX,
-      screenX,
-      screenY,
-      barHeight,
       color: color, // 自己的颜色
     };
     // 更新自己窗口的position
@@ -118,12 +116,44 @@
         ctx.clearRect(0, 0, ele.width, ele.height);
         drawCircle(ctx, x + w, y + h, curPosition.color);
       }
-      ctx.strokeStyle = "black";
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-      ctx.lineTo(x + w, y + h);
-      ctx.stroke();
+      ctx.save()
+      // ctx.strokeStyle = "black";
+      // ctx.beginPath();
+      // ctx.moveTo(x, y);
+      // ctx.lineTo(x + w, y + h);
+      // ctx.stroke();
+      // ctx.closePath();
+      // ctx.restore()
     })
+
+    for (const ele of canvas) {
+      const ctx = ele.getContext('2d');
+      const id = Number(ele.id.split('-')[1])
+      const startPosition = JSON.parse(localStorage.getItem(id));
+      const { x: startX, y: startY, top: startTop, left: startLeft } = startPosition
+      
+      canvas.forEach(canva => {
+        const curKey = Number(canva.id.split('-')[1])
+        const { x: endX, y: endY, left: endLeft, top: endTop } = JSON.parse(localStorage.getItem(curKey));
+        const w = endLeft - startLeft; // 获取相对自己圆心的横向间距
+        const h = endTop - startTop; // 获取相对自己圆心的纵向间距
+
+        // console.log(w, h, curPosition, position)
+        // ctx.save()
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        if (id === key) {
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(startX + w, startY + h);
+        } else {
+          ctx.moveTo(endX, endY);
+          ctx.lineTo(endX + startLeft - endLeft, endY + startTop - endTop);
+        }
+        ctx.stroke();
+        ctx.closePath();
+        ctx.restore()
+      })
+    }
     
     window.requestAnimationFrame(draw);
   }

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<input class="text" type="text">
+</body>
+<script type="module">
+  import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.9.0';
+  let classifier = await pipeline('sentiment-analysis');
+  let result = await classifier('I love transformers!');
+  console.log(result);
+</script>
+</html>
