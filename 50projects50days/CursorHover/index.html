@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cursor Hover</title>
+</head>
+<body>
+<div class="inner"></div>
+<div class="outer"></div>
+
+<div class="wrapper">
+  <div class="area">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    Magnam officiis sapiente laboriosam aut earum, nostrum
+    culpa facilis quidem, dolorum aliquid quos rerum consectetur
+    quisquam. Ut porro officiis accusamus perferendis labore.
+  </div>
+  
+  <div class="area">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+  
+  <div class="area">
+    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+  </div>
+</div>
+
+</body>
+</html>
+<script>
+  const body = document.querySelector("body");
+  const inner = document.querySelector(".inner")
+  const outer = document.querySelector(".outer")
+  const areas = document.querySelectorAll(".area")
+  // let isHover = false
+
+  /**
+   * 处理初始鼠标渲染动画
+   */
+  function appear() {
+    inner.style.opacity = 1
+    outer.style.opacity = 1
+  }
+  body.addEventListener('mouseover', appear, { once: true })
+
+  /**
+   * 处理鼠标移动动画
+   */
+  body.addEventListener('mousemove', (e) => {
+    window.requestAnimationFrame(function() {
+      const target = e.target
+      inner.style.left = `${e.clientX - 13}px`
+      inner.style.top = `${e.clientY - 13}px`
+      // 如果hover到目标元素
+      if (target.classList.contains('area')) {
+        const { left, top, width, height } = target.getBoundingClientRect()
+        outer.style.left = `${left - 12}px`
+        outer.style.top = `${top - 12}px`
+        outer.style.width = `${width + 8}px`
+        outer.style.height = `${height + 8}px`
+        const style = window.getComputedStyle(target)
+        outer.style.borderRadius = `${style.borderRadius}`
+      } else {
+        outer.style.width = `40px`
+        outer.style.height = `40px`
+        outer.style.borderRadius = '50%'
+        outer.style.left = `${e.clientX - 28}px`
+        outer.style.top = `${e.clientY - 30}px`
+      }
+      // if (!isHover) {
+      //   outer.style.width = `40px`
+      //   outer.style.height = `40px`
+      //   outer.style.borderRadius = '50%'
+      //   outer.style.left = `${e.clientX - 28}px`
+      //   outer.style.top = `${e.clientY - 30}px`
+      // }
+    })
+  })
+
+  /**
+   * 单独处理hover元素动画(性能不好)
+   */
+  // areas.forEach(area => {
+  //   area.addEventListener('mouseover', (e) => {
+  //     const target = e.target
+  //     isHover = true
+  //     const { left, top, width, height } = target.getBoundingClientRect()
+  //     outer.style.left = `${left - 12}px`
+  //     outer.style.top = `${top - 12}px`
+  //     outer.style.width = `${width + 8}px`
+  //     outer.style.height = `${height + 8}px`
+  //     const style = window.getComputedStyle(target)
+  //     outer.style.borderRadius = `${style.borderRadius}`
+  //   })
+  //   area.addEventListener('mouseout', (e) => {
+  //     isHover = false
+  //   })
+  // })
+</script>
+<style>
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        background: #fff;
+        overflow: hidden;
+        /*cursor: none;*/
+    }
+    .inner, .outer {
+        position: absolute;
+        border-radius: 50%;
+        background: #4caf50;
+        z-index: 1;
+        opacity: 0;
+        mix-blend-mode: exclusion;
+        pointer-events: none;
+    }
+    .inner {
+        width: 10px;
+        height: 10px;
+    }
+    .outer {
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        transition: .1s ease-out;
+    }
+    
+    .wrapper {
+        width: 100vw;
+        display: flex;
+        justify-content: space-evenly;
+    }
+    
+    .area {
+        width: 300px;
+        height: 300px;
+        overflow: auto;
+        border: 2px solid #000;
+        border-radius: 8px;
+        padding: 20px;
+        font-size: 24px;
+        line-height: 1.5;
+        background-color: #4caf50;
+        color: #fff;
+    }
+    .area:nth-child(2) {
+        width: 200px;
+        height: 200px;
+        border-radius: 24px;
+        background-color: darkgray;
+    }
+    .area:nth-child(3) {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background-color: aqua;
+    }
+</style>
