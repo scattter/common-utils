@@ -31,6 +31,12 @@
 </body>
 </html>
 <script>
+  // 定义常量, 减少计算
+  // hover效果时边框宽度/内部圆半径/外部圆半径
+  const HOVER_WIDTH = 4
+  const INNER_RADIUS = 5
+  const OUTER_RADIUS = 20
+  
   const body = document.querySelector("body");
   const inner = document.querySelector(".inner")
   const outer = document.querySelector(".outer")
@@ -52,53 +58,36 @@
   body.addEventListener('mousemove', (e) => {
     window.requestAnimationFrame(function() {
       const target = e.target
-      inner.style.left = `${e.clientX - 13}px`
-      inner.style.top = `${e.clientY - 13}px`
+      inner.style.left = `${e.clientX - INNER_RADIUS}px`
+      inner.style.top = `${e.clientY - INNER_RADIUS}px`
       // 如果hover到目标元素
       if (target.classList.contains('area')) {
         const { left, top, width, height } = target.getBoundingClientRect()
-        outer.style.left = `${left - 12}px`
-        outer.style.top = `${top - 12}px`
-        outer.style.width = `${width + 8}px`
-        outer.style.height = `${height + 8}px`
+        // 如果已经有hover类名, 说明已经变换过了, 后续就不需要再进行样式设置了
+        if (outer.classList.contains('cursor-hover')) {
+          return;
+        }
+        outer.style.left = `${left - HOVER_WIDTH}px`
+        outer.style.top = `${top - HOVER_WIDTH}px`
+        outer.style.width = `${width + HOVER_WIDTH * 2}px`
+        outer.style.height = `${height + HOVER_WIDTH * 2}px`
         const style = window.getComputedStyle(target)
         outer.style.borderRadius = `${style.borderRadius}`
+        outer.classList.add('cursor-hover')
       } else {
-        outer.style.width = `40px`
-        outer.style.height = `40px`
+        // 如果没有hover类名, 且当前没有hover到元素上 & 不是首次渲染 => 不进行后面操作
+        if (!outer.classList.contains('cursor-hover') && !outer.style.opacity) {
+          return;
+        }
+        outer.style.width = `${OUTER_RADIUS * 2}px`
+        outer.style.height = `${OUTER_RADIUS * 2}px`
         outer.style.borderRadius = '50%'
-        outer.style.left = `${e.clientX - 28}px`
-        outer.style.top = `${e.clientY - 30}px`
+        outer.style.left = `${e.clientX - OUTER_RADIUS}px`
+        outer.style.top = `${e.clientY - OUTER_RADIUS}px`
+        outer.classList.remove('cursor-hover')
       }
-      // if (!isHover) {
-      //   outer.style.width = `40px`
-      //   outer.style.height = `40px`
-      //   outer.style.borderRadius = '50%'
-      //   outer.style.left = `${e.clientX - 28}px`
-      //   outer.style.top = `${e.clientY - 30}px`
-      // }
     })
   })
-
-  /**
-   * 单独处理hover元素动画(性能不好)
-   */
-  // areas.forEach(area => {
-  //   area.addEventListener('mouseover', (e) => {
-  //     const target = e.target
-  //     isHover = true
-  //     const { left, top, width, height } = target.getBoundingClientRect()
-  //     outer.style.left = `${left - 12}px`
-  //     outer.style.top = `${top - 12}px`
-  //     outer.style.width = `${width + 8}px`
-  //     outer.style.height = `${height + 8}px`
-  //     const style = window.getComputedStyle(target)
-  //     outer.style.borderRadius = `${style.borderRadius}`
-  //   })
-  //   area.addEventListener('mouseout', (e) => {
-  //     isHover = false
-  //   })
-  // })
 </script>
 <style>
     * {
@@ -111,7 +100,9 @@
         height: 100vh;
         background: #fff;
         overflow: hidden;
-        /*cursor: none;*/
+        margin: 0;
+        padding: 0;
+        cursor: none;
     }
     .inner, .outer {
         position: absolute;
@@ -137,6 +128,7 @@
         width: 100vw;
         display: flex;
         justify-content: space-evenly;
+        padding-top: 100px;
     }
     
     .area {
