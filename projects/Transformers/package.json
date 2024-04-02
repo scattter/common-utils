@@ -1,0 +1,11 @@
+{
+  "name": "transformers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@xenova/transformers": "^2.9.0",
+    "http": "^0.0.1-security"
+  }
+}
