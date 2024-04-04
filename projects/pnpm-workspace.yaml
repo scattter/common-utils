@@ -6,4 +6,5 @@ packages:
   - 'Ssr-study'
   - 'DirectDownload'
   - 'Ast'
+  - 'llama-index'
 
