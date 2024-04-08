@@ -1,11 +1,13 @@
-/* eslint-disable turbo/no-undeclared-env-vars */
 import {
   ContextChatEngine,
   VectorStoreIndex,
   Document,
   Settings,
-  TogetherLLM,
-  TogetherEmbedding,
+  Ollama,
+  SimpleDirectoryReader,
+  TextQaPrompt,
+  CompactAndRefine,
+  ResponseSynthesizer, RouterQueryEngine, SummaryIndex,
 } from "llamaindex";
 
 // import { MongoClient } from "mongodb";
@@ -30,26 +32,21 @@ import fs from "fs/promises";
 //   return await VectorStoreIndex.fromVectorStore(store, serviceContext);
 // }
 
-const model = new TogetherLLM({
-  apiKey: process.env.TOGETHER_LLM_KEY,
-});
+const model = new Ollama({ model: "qwen:0.5b", temperature: 0.75 });
 Settings.llm = model
-Settings.embedModel = new TogetherEmbedding({
-  apiKey: process.env.TOGETHER_LLM_KEY,
+Settings.embedModel = new Ollama({
+  model: 'nomic-embed-text',
+  modelMetadata: {
+    maxTokens: 256
+  }
 });
 
-export async function createChatEngine() {
-  const path = 'data/intro.txt'
-  const essay = await fs.readFile(path, "utf-8");
-
-  const document = new Document({ text: essay, id_: path });
-
-  // Load and index documents
-  const index = await VectorStoreIndex.fromDocuments([document]);
-  // const index = await getDataSource(llm);
-  const retriever = index.asRetriever({ similarityTopK: 3 });
-  return new ContextChatEngine({
-    chatModel: model,
-    retriever,
+export const createQueryEngine = async () => {
+  const documents = await new SimpleDirectoryReader().loadData({
+    directoryPath: "data",
   });
+
+// Create indices
+  const vectorIndex = await VectorStoreIndex.fromDocuments(documents);
+  return vectorIndex.asQueryEngine();
 }

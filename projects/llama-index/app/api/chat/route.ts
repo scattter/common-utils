@@ -2,7 +2,7 @@ import { initObservability } from "@/app/observability";
 import { StreamingTextResponse } from "ai";
 import { ChatMessage, MessageContent } from "llamaindex";
 import { NextRequest, NextResponse } from "next/server";
-import { createChatEngine } from "./engine";
+import {createQueryEngine} from "./engine";
 import { LlamaIndexStream } from "./llamaindex-stream";
 
 initObservability();
@@ -44,23 +44,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const chatEngine = await createChatEngine();
-
-    // Convert message content from Vercel/AI format to LlamaIndex/OpenAI format
-    const userMessageContent = convertMessageContent(
-      userMessage.content,
-      data?.imageUrl,
-    );
-
-    // Calling LlamaIndex's ChatEngine to get a streamed response
-    const response = await chatEngine.chat({
-      message: userMessageContent,
-      chatHistory: messages,
+    const engine = await createQueryEngine()
+    const res = await engine.query({
+      query: userMessage.content,
       stream: true,
-    });
+    })
 
     // Transform LlamaIndex stream to Vercel/AI format
-    const { stream, data: streamData } = LlamaIndexStream(response, {
+    const { stream, data: streamData } = LlamaIndexStream(res, {
       parserOptions: {
         image_url: data?.imageUrl,
       },
