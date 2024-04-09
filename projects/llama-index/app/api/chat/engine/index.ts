@@ -41,6 +41,23 @@ Settings.embedModel = new Ollama({
   }
 });
 
+// Define a custom prompt
+const newTextQaPrompt: TextQaPrompt = ({ context, query }) => {
+  return `Context information is below.
+---------------------
+${context}
+---------------------
+Given the context information and not prior knowledge, answer the query.
+Answer the query in the style of a Sherlock Holmes detective novel.
+If can not find information in context information, please answer: please provide enough info.
+Query: ${query}
+Answer:`;
+};
+
+const responseSynthesizer = new ResponseSynthesizer({
+  responseBuilder: new CompactAndRefine(undefined, newTextQaPrompt),
+});
+
 export const createQueryEngine = async () => {
   const documents = await new SimpleDirectoryReader().loadData({
     directoryPath: "data",
@@ -48,5 +65,10 @@ export const createQueryEngine = async () => {
 
 // Create indices
   const vectorIndex = await VectorStoreIndex.fromDocuments(documents);
-  return vectorIndex.asQueryEngine();
+  // const engine = vectorIndex.asQueryEngine({ responseSynthesizer })
+  // engine.updatePrompts({
+  //   'responseSynthesizer:textQATemplate': newTextQaPrompt,
+  //   'responseSynthesizer:refineTemplate': newTextQaPrompt,
+  // });
+  return vectorIndex.asQueryEngine({ responseSynthesizer });
 }
