@@ -72,6 +72,7 @@ export default function ChatInput(
           onChange={props.handleInputChange}
         />
         <FileUploader
+          config={{allowedExtensions: ['txt', 'pdf', 'jpeg'], disabled: false} }
           onFileUpload={handleUploadFile}
           onFileError={props.onFileError}
         />

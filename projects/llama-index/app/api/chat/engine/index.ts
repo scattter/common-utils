@@ -32,13 +32,14 @@ import fs from "fs/promises";
 //   return await VectorStoreIndex.fromVectorStore(store, serviceContext);
 // }
 
-const model = new Ollama({ model: "qwen:0.5b", temperature: 0.75 });
+const model = new Ollama({ model: "qwen:4b", temperature: 0.75, baseURL: process.env.REMOTE_OLLAMA_URL });
 Settings.llm = model
 Settings.embedModel = new Ollama({
   model: 'nomic-embed-text',
   modelMetadata: {
     maxTokens: 256
-  }
+  },
+  baseURL: process.env.REMOTE_OLLAMA_URL
 });
 
 // Define a custom prompt
