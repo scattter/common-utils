@@ -1,9 +1,14 @@
-import { useState } from "react";
+import {ChangeEvent, useCallback, useState} from "react";
 import { Button } from "../button";
 import FileUploader from "../file-uploader";
 import { Input } from "../input";
 import UploadImagePreview from "../upload-image-preview";
 import { ChatHandler } from "./chat.interface";
+import {
+  createSplitFormDataList, mergeSplitFile,
+  parallel,
+  uploadSplitFile
+} from "@/app/utils/file";
 
 export default function ChatInput(
   props: Pick<
@@ -54,6 +59,17 @@ export default function ChatInput(
     }
   };
 
+  const handleUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    try {
+      const file = e?.target?.files?.[0]
+      if (!file) return;
+      const chunkList = createSplitFormDataList(file)
+      parallel<FormData>(chunkList.map(({ formData }) => formData), uploadSplitFile, 5).finally(() => {
+        mergeSplitFile(file.name)
+      })
+    } catch {}
+  }, [])
+
   return (
     <form
       onSubmit={onSubmit}
@@ -76,6 +92,7 @@ export default function ChatInput(
           onFileUpload={handleUploadFile}
           onFileError={props.onFileError}
         />
+        <Input type={'file'} className="w-24" onChange={handleUpload} />
         <Button type="submit" disabled={props.isLoading}>
           Send message
         </Button>
