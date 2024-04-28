@@ -92,7 +92,10 @@ export default function ChatInput(
           onFileUpload={handleUploadFile}
           onFileError={props.onFileError}
         />
-        <Input type={'file'} className="w-24" onChange={handleUpload} />
+        <label>
+          <div className={'h-10 leading-10 hover:cursor-pointer'}>上传文件</div>
+          <Input type={'file'} name={'upload'} className="hidden" onChange={handleUpload} />
+        </label>
         <Button type="submit" disabled={props.isLoading}>
           Send message
         </Button>
