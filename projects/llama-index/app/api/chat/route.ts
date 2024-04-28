@@ -32,7 +32,7 @@ const convertMessageContent = (
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { messages, data }: { messages: ChatMessage[]; data: any } = body;
+    const { messages, data }: { messages: ChatMessage[]; data: any; } = body;
     const userMessage = messages.pop();
     if (!messages || !userMessage || userMessage.role !== "user") {
       return NextResponse.json(
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const engine = await createQueryEngine()
+    const engine = await createQueryEngine(data?.referLink)
     const res = await engine.query({
       query: userMessage.content,
       stream: true,

@@ -24,6 +24,7 @@ export default function ChatInput(
   },
 ) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [referLink, setReferLink] = useState<string>('')
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     if (imageUrl) {
@@ -33,7 +34,13 @@ export default function ChatInput(
       setImageUrl(null);
       return;
     }
-    props.handleSubmit(e);
+    props.handleSubmit(e, {
+      data: {
+        referLink
+      }
+    });
+
+    setReferLink('')
   };
 
   const onRemovePreviewImage = () => setImageUrl(null);
@@ -78,6 +85,10 @@ export default function ChatInput(
       {imageUrl && (
         <UploadImagePreview url={imageUrl} onRemove={onRemovePreviewImage} />
       )}
+      <div className="flex w-full items-center">
+        <span className="inline-block mr-2">参考网站(可选)</span>
+        <Input value={referLink} onChange={(e) => setReferLink(e.target.value)} name="referLink" className="flex-1" placeholder="Type your reference web link" />
+      </div>
       <div className="flex w-full items-start justify-between gap-4 ">
         <Input
           autoFocus

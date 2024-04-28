@@ -1,5 +1,4 @@
 import {
-  ContextChatEngine,
   VectorStoreIndex,
   Document,
   Settings,
@@ -7,12 +6,11 @@ import {
   SimpleDirectoryReader,
   TextQaPrompt,
   CompactAndRefine,
-  ResponseSynthesizer, RouterQueryEngine, SummaryIndex,
+  ResponseSynthesizer,
 } from "llamaindex";
 
 // import { MongoClient } from "mongodb";
-import { checkRequiredEnvVars, CHUNK_OVERLAP, CHUNK_SIZE } from "./shared.mjs";
-import fs from "fs/promises";
+import {scrapeMain} from "@/middleware/firecrawl/scrapeWeb";
 
 // async function getDataSource(llm: LLM) {
 //   checkRequiredEnvVars();
@@ -32,14 +30,9 @@ import fs from "fs/promises";
 //   return await VectorStoreIndex.fromVectorStore(store, serviceContext);
 // }
 
-const model = new Ollama({ model: "qwen:0.5b", temperature: 0.75 });
+const model = new Ollama({ model: "llama3:8b", temperature: 0.75 });
 Settings.llm = model
-Settings.embedModel = new Ollama({
-  model: 'nomic-embed-text',
-  modelMetadata: {
-    maxTokens: 256
-  },
-});
+Settings.embedModel = model;
 
 // Define a custom prompt
 const newTextQaPrompt: TextQaPrompt = ({ context, query }) => {
@@ -50,6 +43,7 @@ ${context}
 Given the context information and not prior knowledge, answer the query.
 Answer the query in the style of a Sherlock Holmes detective novel.
 If can not find information in context information, please answer: please provide enough info.
+Always answer the query in Chinese.
 Query: ${query}
 Answer:`;
 };
@@ -58,12 +52,21 @@ const responseSynthesizer = new ResponseSynthesizer({
   responseBuilder: new CompactAndRefine(undefined, newTextQaPrompt),
 });
 
-export const createQueryEngine = async () => {
+export const createQueryEngine = async (referLink?: string) => {
   const documents = await new SimpleDirectoryReader().loadData({
     directoryPath: "data",
   });
 
-// Create indices
+  if (referLink) {
+    const crawlResult = await scrapeMain(referLink)
+
+    const document = new Document()
+    document.metadata = crawlResult.metadata
+    document.setContent(crawlResult.markdown)
+    documents.push(document)
+  }
+
+  // Create indices
   const vectorIndex = await VectorStoreIndex.fromDocuments(documents);
   // const engine = vectorIndex.asQueryEngine({ responseSynthesizer })
   // engine.updatePrompts({

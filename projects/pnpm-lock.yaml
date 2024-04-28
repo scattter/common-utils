@@ -156,6 +156,9 @@ importers:
 
   llama-index:
     dependencies:
+      '@mendable/firecrawl-js':
+        specifier: ^0.0.11
+        version: 0.0.11
       '@radix-ui/react-slot':
         specifier: ^1.0.2
         version: 1.0.2(@types/react@18.2.73)(react@18.2.0)
@@ -1433,6 +1436,15 @@ packages:
       '@types/node': 20.12.2
       lodash: 4.17.21
       pathe: 1.1.2
+    dev: false
+
+  /@mendable/firecrawl-js@0.0.11:
+    resolution: {integrity: sha512-p9XIF9YQvTHiOppbxVyZ5/xXcxwxTX9IgJQdmT/yzOIyymX6N4J5bu41stIz31KooJecrm8ghUy8cbcnM6tbGg==}
+    dependencies:
+      axios: 1.6.8
+      dotenv: 16.4.5
+    transitivePeerDependencies:
+      - debug
     dev: false
 
   /@mistralai/mistralai@0.0.10:
@@ -3850,6 +3862,11 @@ packages:
 
   /dotenv@16.3.1:
     resolution: {integrity: sha512-IPzF4w4/Rd94bA9imS68tZBaYyBWSCE47V1RGuMrB94iyTOIEwRmVL2x/4An+6mETpLrKJ5hQkB8W4kFAadeIQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /dotenv@16.4.5:
+    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
     engines: {node: '>=12'}
     dev: false
 
