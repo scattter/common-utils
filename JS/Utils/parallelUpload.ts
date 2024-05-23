@@ -1,68 +1,69 @@
 /**
  * 批量发送请求
  */
-class ParallelUpload {
+export class ParallelUpload {
   // 并发请求数
   protected limit = 2;
   // 存储请求序列
-  protected requestQueue: Promise<any>[] = []
+  protected requestQueue: Promise<any>[] = [];
   // 当前请求下标
-  protected cursor = 0
+  protected cursor = 0;
   // 需要发送的请求入参
-  protected jobs: string[] = []
+  protected isUploading: boolean = false;
+  protected jobs: string[] = [];
   // 外部传入的请求方法
-  protected fn: (job: string, abort?: AbortController) => Promise<any> = () => Promise.resolve()
+  protected abortControllers: AbortController[] = [];
+  protected fn: (job: string, abort?: AbortController) => Promise<any>;
   // 判断是否正在上传
-  protected isUploading: boolean = false
   // 控制请求打断
-  protected abortControllers: AbortController[] = []
 
   constructor(jobs: string | string[], fn: (job: string, abort?: AbortController) => Promise<any>, limit?: number) {
-    this.jobs = Array.isArray(jobs) ? jobs : [jobs]
-    this.fn = fn
+    this.jobs = Array.isArray(jobs) ? jobs : [jobs];
+    this.fn = fn;
     limit && (this.limit = limit);
-    this.requestQueue = new Array(jobs.length)
+    this.requestQueue = new Array(jobs.length);
   }
 
-  private async handle() {
+  public async start() {
+    this.isUploading = true;
+    const works = [];
+    for (let i = 0; i < this.limit; i++) {
+      works.push(this.handle());
+    }
+    await Promise.allSettled(works);
+    const result = [...this.requestQueue];
+    this.init();
+    return Promise.resolve(result);
+  }
+
+  public stop() {
+    this.abortControllers.forEach((controller) => controller.abort());
+    this.init();
+  }
+
+  protected init() {
+    this.cursor = 0;
+    this.requestQueue = [];
+    this.abortControllers = [];
+    this.isUploading = false;
+  }
+
+  protected async handle() {
     let currentJob;
     while (this.cursor < this.jobs.length) {
       if (!this.isUploading) {
         break;
       }
       try {
-        const abort = new AbortController()
+        const abort = new AbortController();
         currentJob = this.cursor;
         this.cursor += 1;
-        this.abortControllers[currentJob] = abort
-        this.requestQueue[currentJob] = await this.fn(this.jobs[currentJob], abort);
+        this.abortControllers[currentJob] = abort;
+        this.requestQueue[currentJob] = await this.fn(this.jobs[currentJob]!, abort);
       } catch (e) {
         console.log(`job: ${currentJob}`, e);
       }
     }
-  }
-
-  async start() {
-    this.isUploading = true
-    const works = []
-    for (let i = 0; i < this.limit ; i++) {
-      works.push(this.handle())
-    }
-    await Promise.all(works);
-    this.init()
-    return works
-  }
-
-  stop() {
-    this.abortControllers.forEach(controller => controller.abort())
-    this.init()
-  }
-
-  protected init() {
-    this.cursor = 0
-    this.requestQueue = []
-    this.abortControllers = []
-    this.isUploading = false
   }
 }
 
