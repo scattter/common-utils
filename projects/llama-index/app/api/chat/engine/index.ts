@@ -30,7 +30,7 @@ import {scrapeMain} from "@/middleware/firecrawl/scrapeWeb";
 //   return await VectorStoreIndex.fromVectorStore(store, serviceContext);
 // }
 
-const model = new Ollama({ model: "llama3:8b", temperature: 0.75 });
+const model = new Ollama({ model: "qwen:0.5b", temperature: 0.75 });
 Settings.llm = model
 Settings.embedModel = model;
 
@@ -40,9 +40,9 @@ const newTextQaPrompt: TextQaPrompt = ({ context, query }) => {
 ---------------------
 ${context}
 ---------------------
-Given the context information and not prior knowledge, answer the query.
-Answer the query in the style of a Sherlock Holmes detective novel.
-If can not find information in context information, please answer: please provide enough info.
+// Given the context information and not prior knowledge, answer the query.
+// Answer the query in the style of a Sherlock Holmes detective novel.
+// If can not find information in context information, please answer: please provide enough info.
 Always answer the query in Chinese.
 Query: ${query}
 Answer:`;
