@@ -7,4 +7,5 @@ packages:
   - 'DirectDownload'
   - 'Ast'
   - 'llama-index'
+  - 'WebSocketStudy'
 
