@@ -8,4 +8,5 @@ packages:
   - 'Ast'
   - 'llama-index'
   - 'WebSocketStudy'
+  - 'retro-app'
 
