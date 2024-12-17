@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<label>
+  <input id="phone" type="text" placeholder="请输入你的手机号">
+</label>
+<button id="phone-btn">提交手机号</button>
+<label>
+  <input id="code" type="text" placeholder="请输入你的验证码">
+</label>
+<button id="code-btn">提交验证码</button>
+</body>
+</html>
+<script>
+  const phoneEle = document.querySelector('#phone')
+  const codeEle = document.querySelector('#code')
+  const phoneBtn = document.querySelector('#phone-btn')
+  const codeBtn = document.querySelector('#code-btn')
+
+  phoneBtn.addEventListener('click', () => {
+    fetch('/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        phone: phoneEle.value
+      })
+    })
+  })
+
+  codeBtn.addEventListener('click', () => {
+    fetch('/code', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        code: codeEle.value
+      })
+    })
+  })
+</script>
