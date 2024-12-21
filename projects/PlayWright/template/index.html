@@ -9,9 +9,15 @@
 </head>
 <body>
 <label>
+  <input id="downloadUrl" type="text" placeholder="请输入你的下载地址">
+</label>
+<label>
+  <input id="sharePwd" type="text" placeholder="请输入你的下载链接密码(如有)">
+</label>
+<label>
   <input id="phone" type="text" placeholder="请输入你的手机号">
 </label>
-<button id="phone-btn">提交手机号</button>
+<button id="phone-btn">提交下载地址和手机号</button>
 <label>
   <input id="code" type="text" placeholder="请输入你的验证码">
 </label>
@@ -19,6 +25,8 @@
 </body>
 </html>
 <script>
+  const downloadUrlEle = document.querySelector('#downloadUrl')
+  const sharePwdEle = document.querySelector('#sharePwd')
   const phoneEle = document.querySelector('#phone')
   const codeEle = document.querySelector('#code')
   const phoneBtn = document.querySelector('#phone-btn')
@@ -31,7 +39,9 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        phone: phoneEle.value
+        phone: phoneEle.value,
+        downloadUrl: downloadUrlEle.value,
+        sharePwd: sharePwdEle.value
       })
     })
   })
@@ -43,7 +53,7 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        code: codeEle.value
+        smsCode: codeEle.value
       })
     })
   })
