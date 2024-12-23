@@ -9,4 +9,6 @@ packages:
   - 'llama-index'
   - 'WebSocketStudy'
   - 'retro-app'
+  - 'CloudDownload/frontend'
+  - 'CloudDownload/backend'
 
