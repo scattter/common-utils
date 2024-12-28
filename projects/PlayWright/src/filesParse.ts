@@ -4,6 +4,7 @@ import {handleDownload} from "./UrlDownload";
 
 // 嗜血法医 1-8季 中英字幕 转载于网络收集
 // 链接：https://cloud.189.cn/t/iueYzmJruqMz
+// 复制这段文字打开天翼云盘APP查看更方便哦 链接 https://cloud.189.cn/t/VrEvMrN32uUj（访问码：0lwf）
 
 const url = 'https://cloud.189.cn/t/iueYzmJruqMz'
 const downloadUrl2 = 'https://cloud.189.cn/t/VrEvMrN32uUj'

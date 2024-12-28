@@ -1,5 +1,7 @@
 import {
   Button,
+  Divider,
+  Empty,
   Input,
   Spin,
   Tree,
@@ -8,11 +10,11 @@ import {
 } from 'antd';
 import axios from 'axios';
 import type React from 'react';
-import { useCallback } from 'react';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { memo } from 'react';
-import type { IFileInfo } from '../../interfaces';
+import { memo, useCallback, useEffect, useState } from 'react';
+import { SSE_EVENT, VALID_INFO_TYPE } from '../../enums';
+import type { IFileInfo, IServerFolderInfo } from '../../interfaces';
+import InfoCard from '../InfoCard';
+import { InputDialog } from '../InputDialog';
 import styles from './index.module.scss';
 
 const InitDownload: React.FC = () => {
@@ -25,9 +27,13 @@ const InitDownload: React.FC = () => {
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [treeData, setTreeData] = useState<(IFileInfo & TreeDataNode)[]>([]);
   const [loadingText, setLoadingText] = useState<string>('');
+  const [baseUrl, setBaseUrl] = useState<string>('.');
+  const [curFolder, setCurFolder] = useState<IServerFolderInfo>({
+    basePath: '',
+    files: [],
+  });
 
   const onExpand: TreeProps['onExpand'] = (expandedKeysValue) => {
-    console.log('onExpand', expandedKeysValue);
     // if not set autoExpandParent to false, if children expanded, parent can not collapse.
     // or, you can remove all expanded children keys.
     setExpandedKeys(expandedKeysValue);
@@ -35,12 +41,10 @@ const InitDownload: React.FC = () => {
   };
 
   const onCheck: TreeProps['onCheck'] = (checkedKeysValue) => {
-    console.log('onCheck', checkedKeysValue);
     setCheckedKeys(checkedKeysValue as React.Key[]);
   };
 
-  const onSelect: TreeProps['onSelect'] = (selectedKeysValue, info) => {
-    console.log('onSelect', info);
+  const onSelect: TreeProps['onSelect'] = (selectedKeysValue) => {
     setSelectedKeys(selectedKeysValue);
   };
 
@@ -50,7 +54,6 @@ const InitDownload: React.FC = () => {
     axios
       .post('/file/parse', { downloadUrl, sharePwd })
       .then((res) => {
-        console.log(res.data);
         setTreeData(res.data);
       })
       .finally(() => {
@@ -59,26 +62,52 @@ const InitDownload: React.FC = () => {
       });
   }, [downloadUrl, sharePwd]);
 
+  const handleQueryFolder = useCallback(() => {
+    axios
+      .post('/file/folder', { baseUrl })
+      .then((res) => {
+        setCurFolder(res.data);
+      })
+      .finally(() => {
+        // setIsFinding(false);
+      });
+  }, [baseUrl]);
+
   useEffect(() => {
     const eventSource = new EventSource('/sse');
-    // eventSource.addEventListener('connected', (e) => {
-    //   console.log(e);
-    // });
-    // eventSource.addEventListener('open', (e) => {
-    //   console.log('open', e);
-    // });
-    eventSource.addEventListener('startParse', (e) => {
+    eventSource.addEventListener(SSE_EVENT.START_PARSE, (e) => {
       const data = JSON.parse(e.data ?? {});
       setLoadingText(data.message);
     });
-    // eventSource.addEventListener('error', (e) => {
-    //   console.log('error', e);
-    // });
+
+    eventSource.addEventListener(SSE_EVENT.NEED_PHONE, (e) => {
+      const data: { message: string } = JSON.parse(e.data ?? {});
+      InputDialog.open({
+        title: data.message,
+        onOk: (val) => {
+          return axios.post('/file/updateValid', {
+            type: VALID_INFO_TYPE.PHONE,
+            val,
+          });
+        },
+        onClose: () => {
+          return axios.get('/file/abort');
+        },
+      });
+    });
+
+    eventSource.addEventListener('error', (e) => {
+      console.log(e);
+    });
 
     return () => {
       eventSource.close();
     };
   }, []);
+
+  useEffect(() => {
+    handleQueryFolder();
+  }, [handleQueryFolder]);
 
   return (
     <div className={styles.initWrapper}>
@@ -105,26 +134,90 @@ const InitDownload: React.FC = () => {
         </Button>
       </div>
       <div className={styles.fileWrapper}>
-        {isFinding ? (
-          <Spin tip={loadingText} />
-        ) : (
-          <Tree
-            rootStyle={{ width: '100%', height: '100%' }}
-            checkable
-            onExpand={onExpand}
-            expandedKeys={expandedKeys}
-            autoExpandParent={autoExpandParent}
-            onCheck={onCheck}
-            checkedKeys={checkedKeys}
-            onSelect={onSelect}
-            selectedKeys={selectedKeys}
-            fieldNames={{
-              key: 'id',
-              title: 'name',
-            }}
-            treeData={treeData as TreeDataNode[]}
-          />
-        )}
+        <div className={styles.treeWrapper}>
+          {isFinding ? (
+            <Spin tip={loadingText} />
+          ) : treeData.length > 0 ? (
+            <Tree
+              rootStyle={{ width: '100%', height: '100%' }}
+              checkable
+              onExpand={onExpand}
+              expandedKeys={expandedKeys}
+              autoExpandParent={autoExpandParent}
+              onCheck={onCheck}
+              checkedKeys={checkedKeys}
+              onSelect={onSelect}
+              selectedKeys={selectedKeys}
+              fieldNames={{
+                key: 'id',
+                title: 'name',
+              }}
+              treeData={treeData as TreeDataNode[]}
+            />
+          ) : (
+            <Empty />
+          )}
+        </div>
+        <div className={styles.operationWrapper}>
+          <div className={styles.content}>
+            <div className={styles.folderWrapper}>
+              {/*<div className={styles.title}>想要下载到</div>*/}
+              <div className={styles.curPath}>
+                <span>{`下载路径: ${curFolder.basePath}`}</span>
+                <Button
+                  disabled={baseUrl === '.'}
+                  type="link"
+                  onClick={() => {
+                    setBaseUrl((prevState) => {
+                      const ls = prevState.split('/');
+                      ls.pop();
+                      return ls.join('/');
+                    });
+                  }}
+                >
+                  返回上一级
+                </Button>
+              </div>
+              <Divider style={{ margin: '6px 0' }} />
+              <div className={styles.folderDetail}>
+                {curFolder.files.map((file) => {
+                  return (
+                    <div key={`${file.name}-${file.isDirectory}`}>
+                      {file.isDirectory ? (
+                        <Button
+                          style={{ fontSize: 16 }}
+                          type={'link'}
+                          onClick={() =>
+                            setBaseUrl(
+                              (prevUrl) =>
+                                `${prevUrl}${prevUrl.endsWith('/') ? '' : '/'}${file.name}`,
+                            )
+                          }
+                        >
+                          {file.name}
+                        </Button>
+                      ) : (
+                        <div style={{ paddingLeft: 16 }}>{file.name}</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <Button
+              // disabled={checkedKeys.length === 0}
+              type="primary"
+              onClick={() => {
+                axios.post('file/test');
+              }}
+            >
+              下载
+            </Button>
+          </div>
+          <div className={styles.process}>
+            <InfoCard content={'下载进度'} />
+          </div>
+        </div>
       </div>
     </div>
   );

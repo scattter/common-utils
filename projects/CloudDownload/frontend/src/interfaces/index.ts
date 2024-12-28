@@ -7,3 +7,11 @@ export interface IFileInfo {
   children: IFileInfo[];
   checked: boolean;
 }
+
+export interface IServerFolderInfo {
+  basePath: string;
+  files: {
+    name: string;
+    isDirectory: boolean;
+  }[];
+}
