@@ -9,7 +9,9 @@ import {
   type TreeProps,
 } from 'antd';
 import axios from 'axios';
+import _ from 'lodash';
 import type React from 'react';
+import { useMemo } from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SSE_EVENT, VALID_INFO_TYPE } from '../../enums';
 import type { IFileInfo, IServerFolderInfo } from '../../interfaces';
@@ -23,7 +25,6 @@ const InitDownload: React.FC = () => {
   const [isFinding, setIsFinding] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
   const [checkedKeys, setCheckedKeys] = useState<React.Key[]>([]);
-  const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [treeData, setTreeData] = useState<(IFileInfo & TreeDataNode)[]>([]);
   const [loadingText, setLoadingText] = useState<string>('');
@@ -32,6 +33,21 @@ const InitDownload: React.FC = () => {
     basePath: '',
     files: [],
   });
+
+  const checkedTree = useMemo(() => {
+    if (checkedKeys.length === 0) return treeData;
+    const copyTree = _.cloneDeep(treeData);
+    const fun = (tree: IFileInfo[]) => {
+      for (const copyTreeElement of tree) {
+        copyTreeElement.checked = checkedKeys.includes(copyTreeElement.id);
+        if (copyTreeElement.children && copyTreeElement.children.length > 0) {
+          fun(copyTreeElement.children);
+        }
+      }
+    };
+    fun(copyTree);
+    return copyTree;
+  }, [checkedKeys, treeData]);
 
   const onExpand: TreeProps['onExpand'] = (expandedKeysValue) => {
     // if not set autoExpandParent to false, if children expanded, parent can not collapse.
@@ -42,10 +58,6 @@ const InitDownload: React.FC = () => {
 
   const onCheck: TreeProps['onCheck'] = (checkedKeysValue) => {
     setCheckedKeys(checkedKeysValue as React.Key[]);
-  };
-
-  const onSelect: TreeProps['onSelect'] = (selectedKeysValue) => {
-    setSelectedKeys(selectedKeysValue);
   };
 
   const handleParseUrl = useCallback(() => {
@@ -96,6 +108,22 @@ const InitDownload: React.FC = () => {
       });
     });
 
+    eventSource.addEventListener(SSE_EVENT.NEED_SMS_CODE, (e) => {
+      const data: { message: string } = JSON.parse(e.data ?? {});
+      InputDialog.open({
+        title: data.message,
+        onOk: (val) => {
+          return axios.post('/file/updateValid', {
+            type: VALID_INFO_TYPE.SMS_CODE,
+            val,
+          });
+        },
+        onClose: () => {
+          return axios.get('/file/abort');
+        },
+      });
+    });
+
     eventSource.addEventListener('error', (e) => {
       console.log(e);
     });
@@ -135,28 +163,27 @@ const InitDownload: React.FC = () => {
       </div>
       <div className={styles.fileWrapper}>
         <div className={styles.treeWrapper}>
-          {isFinding ? (
-            <Spin tip={loadingText} />
-          ) : treeData.length > 0 ? (
-            <Tree
-              rootStyle={{ width: '100%', height: '100%' }}
-              checkable
-              onExpand={onExpand}
-              expandedKeys={expandedKeys}
-              autoExpandParent={autoExpandParent}
-              onCheck={onCheck}
-              checkedKeys={checkedKeys}
-              onSelect={onSelect}
-              selectedKeys={selectedKeys}
-              fieldNames={{
-                key: 'id',
-                title: 'name',
-              }}
-              treeData={treeData as TreeDataNode[]}
-            />
-          ) : (
-            <Empty />
-          )}
+          <Spin spinning={isFinding} tip={loadingText}>
+            {treeData.length > 0 ? (
+              <Tree
+                rootStyle={{ width: '100%', height: '100%', padding: 16 }}
+                checkable
+                onExpand={onExpand}
+                expandedKeys={expandedKeys}
+                autoExpandParent={autoExpandParent}
+                onCheck={onCheck}
+                checkedKeys={checkedKeys}
+                selectable={false}
+                fieldNames={{
+                  key: 'id',
+                  title: 'name',
+                }}
+                treeData={treeData as TreeDataNode[]}
+              />
+            ) : (
+              !isFinding && <Empty />
+            )}
+          </Spin>
         </div>
         <div className={styles.operationWrapper}>
           <div className={styles.content}>
@@ -208,7 +235,7 @@ const InitDownload: React.FC = () => {
               // disabled={checkedKeys.length === 0}
               type="primary"
               onClick={() => {
-                axios.post('file/test');
+                axios.post('file/download', { files: checkedTree });
               }}
             >
               下载

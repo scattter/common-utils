@@ -122,12 +122,18 @@ importers:
 
   CloudDownload/frontend:
     dependencies:
+      '@types/lodash':
+        specifier: ^4.17.14
+        version: 4.17.14
       antd:
         specifier: ^5.22.5
         version: 5.22.5(react-dom@19.0.0)(react@19.0.0)
       axios:
         specifier: ^1.7.9
         version: 1.7.9
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -4596,6 +4602,10 @@ packages:
 
   /@types/lodash@4.17.0:
     resolution: {integrity: sha512-t7dhREVv6dbNj0q17X12j7yDG4bD/DHYX7o5/DbDxobP0HnGPgpRz2Ej77aL7TZT3DSw13fqUTj8J4mMnqa7WA==}
+    dev: false
+
+  /@types/lodash@4.17.14:
+    resolution: {integrity: sha512-jsxagdikDiDBeIRaPYtArcT8my4tN1og7MtMRquFT3XNA6axxyHDRUemqDz/taRDdOUn0GnGHRCuff4q48sW9A==}
     dev: false
 
   /@types/long@4.0.2:
