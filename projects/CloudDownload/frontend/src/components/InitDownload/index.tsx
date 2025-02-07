@@ -246,7 +246,12 @@ const InitDownload: React.FC = () => {
           >
             {treeData.length > 0 ? (
               <Tree
-                rootStyle={{ width: '100%', height: '100%', padding: 16 }}
+                rootStyle={{
+                  width: '100%',
+                  height: '100%',
+                  padding: 16,
+                  overflow: 'auto',
+                }}
                 checkable
                 onExpand={onExpand}
                 expandedKeys={expandedKeys}

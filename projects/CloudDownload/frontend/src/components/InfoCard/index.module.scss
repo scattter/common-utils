@@ -7,9 +7,5 @@
 
   box-sizing: border-box;
   padding: 12px;
-  border-radius: 20px;
-  background: #FFF;
-
-  /* 阴影/m-中层投影 */
-  box-shadow: 0 8px 16px 0 rgba(49, 52, 56, 0.08);
+  overflow: auto;
 }
