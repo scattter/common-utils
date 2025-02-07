@@ -3,6 +3,7 @@ import {
   Divider,
   Empty,
   Input,
+  Progress,
   Spin,
   Tree,
   type TreeDataNode,
@@ -33,6 +34,14 @@ const InitDownload: React.FC = () => {
     basePath: '',
     files: [],
   });
+  const [downloadContent, setDownloadContent] = useState<
+    {
+      title: string;
+      progress: number;
+      total?: number;
+      error?: boolean;
+    }[]
+  >([]);
 
   const checkedTree = useMemo(() => {
     if (checkedKeys.length === 0) return treeData;
@@ -124,6 +133,73 @@ const InitDownload: React.FC = () => {
       });
     });
 
+    eventSource.addEventListener(SSE_EVENT.PHASE_START_DOWN, (e) => {
+      const data: { title: string } = JSON.parse(e.data ?? {});
+      setDownloadContent((prev) => {
+        return [
+          ...prev,
+          {
+            title: data.title,
+            progress: 0,
+          },
+        ];
+      });
+    });
+
+    eventSource.addEventListener(SSE_EVENT.PROCESSING, (e) => {
+      const data: { title: string; progress: number; total: number } =
+        JSON.parse(e.data ?? {});
+      setDownloadContent((prev) => {
+        return prev.map((item) => {
+          if (item.title === data.title) {
+            return {
+              ...item,
+              progress: data.progress,
+              total: data.total,
+            };
+          }
+          return item;
+        });
+      });
+    });
+
+    eventSource.addEventListener(SSE_EVENT.PHASE_FINISH, (e) => {
+      const data: { title: string } = JSON.parse(e.data ?? {});
+      // setDownloadContent(prev => prev + data.message)
+      setDownloadContent((prev) => {
+        return prev.map((item) => {
+          if (item.title === data.title) {
+            return {
+              ...item,
+              progress: 100,
+            };
+          }
+          return item;
+        });
+      });
+    });
+
+    eventSource.addEventListener(SSE_EVENT.PHASE_ERROR, (e) => {
+      const data: { title: string } = JSON.parse(e.data ?? {});
+      // setDownloadContent(prev => prev + data.message)
+      setDownloadContent((prev) => {
+        return prev.map((item) => {
+          if (item.title === data.title) {
+            return {
+              ...item,
+              error: true,
+            };
+          }
+          return item;
+        });
+      });
+    });
+
+    // eventSource.addEventListener(SSE_EVENT.FINISH, (e) => {
+    //   const data: { message: string } = JSON.parse(e.data ?? {});
+    //   setDownloadContent(prev => prev + data.message)
+    // })
+
     eventSource.addEventListener('error', (e) => {
       console.log(e);
     });
@@ -163,7 +239,11 @@ const InitDownload: React.FC = () => {
       </div>
       <div className={styles.fileWrapper}>
         <div className={styles.treeWrapper}>
-          <Spin spinning={isFinding} tip={loadingText}>
+          <Spin
+            style={{ height: '100%' }}
+            spinning={isFinding}
+            tip={loadingText}
+          >
             {treeData.length > 0 ? (
               <Tree
                 rootStyle={{ width: '100%', height: '100%', padding: 16 }}
@@ -181,7 +261,7 @@ const InitDownload: React.FC = () => {
                 treeData={treeData as TreeDataNode[]}
               />
             ) : (
-              !isFinding && <Empty />
+              !isFinding && <Empty style={{ width: '100%', height: '100%' }} />
             )}
           </Spin>
         </div>
@@ -241,8 +321,34 @@ const InitDownload: React.FC = () => {
               下载
             </Button>
           </div>
-          <div className={styles.process}>
-            <InfoCard content={'下载进度'} />
+          <div className={styles.processWrapper}>
+            <InfoCard
+              content={downloadContent.map((content) => {
+                return (
+                  <div key={content.title} style={{ width: '100%' }}>
+                    <div>{content.title}</div>
+                    <div style={{ display: 'flex' }}>
+                      <Progress
+                        style={{ flexGrow: 1 }}
+                        percent={content.progress}
+                        size={{ height: 20 }}
+                        percentPosition={{ align: 'center', type: 'inner' }}
+                        status={content.error ? 'exception' : 'normal'}
+                      />
+                      <div
+                        style={{
+                          width: '80px',
+                          marginLeft: 10,
+                          textAlign: 'center',
+                        }}
+                      >
+                        {content.total ? `${content.total}M` : '--'}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            />
           </div>
         </div>
       </div>

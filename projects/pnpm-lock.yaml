@@ -46,6 +46,9 @@ importers:
       '@nestjs/platform-express':
         specifier: ^10.0.0
         version: 10.4.15(@nestjs/common@10.4.15)(@nestjs/core@10.4.15)
+      axios:
+        specifier: ^1.7.9
+        version: 1.7.9
       playwright:
         specifier: ^1.49.1
         version: 1.49.1
@@ -1964,7 +1967,7 @@ packages:
     hasBin: true
     requiresBuild: true
     dependencies:
-      axios: 1.6.8
+      axios: 1.7.9
       bson: 6.5.0
       winston: 3.13.0
     transitivePeerDependencies:
@@ -2884,7 +2887,7 @@ packages:
   /@mendable/firecrawl-js@0.0.11:
     resolution: {integrity: sha512-p9XIF9YQvTHiOppbxVyZ5/xXcxwxTX9IgJQdmT/yzOIyymX6N4J5bu41stIz31KooJecrm8ghUy8cbcnM6tbGg==}
     dependencies:
-      axios: 1.6.8
+      axios: 1.7.9
       dotenv: 16.4.5
     transitivePeerDependencies:
       - debug
@@ -15063,7 +15066,7 @@ packages:
     resolution: {integrity: sha512-RAYaMpXC9/E873RaSEtlEa8dXK4e0p5k98GKOd210MtkE5emm6fcnwD+N6ZA4cuffjDWagvhaQKtp/mGp2BOVQ==}
     engines: {node: '>=10'}
     dependencies:
-      axios: 1.6.8
+      axios: 1.7.9
       infobox-parser: 3.6.4
     transitivePeerDependencies:
       - debug
