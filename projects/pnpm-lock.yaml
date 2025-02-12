@@ -322,7 +322,7 @@ importers:
         version: 1.0.2(@types/react@18.2.73)(react@18.2.0)
       ai:
         specifier: ^3.0.19
-        version: 3.0.19(react@18.2.0)(solid-js@1.9.3)(svelte@4.2.12)(vue@3.4.21)(zod@3.22.4)
+        version: 3.0.19(react@18.2.0)(solid-js@1.9.3)(svelte@4.2.12)(vue@3.4.21)(zod@3.24.2)
       axios:
         specifier: ^1.6.8
         version: 1.6.8
@@ -5538,7 +5538,7 @@ packages:
       humanize-ms: 1.2.1
     dev: false
 
-  /ai@3.0.19(react@18.2.0)(solid-js@1.9.3)(svelte@4.2.12)(vue@3.4.21)(zod@3.22.4):
+  /ai@3.0.19(react@18.2.0)(solid-js@1.9.3)(svelte@4.2.12)(vue@3.4.21)(zod@3.24.2):
     resolution: {integrity: sha512-HV0MixfqMrxq2N/gVsEXoNfO9e0mWkgv7zdUH6UvdtI53Qd0UjoxjH0bwe/TsxoCqnK4gnWaGYiGKZrpy/Ldtw==}
     engines: {node: '>=14.6'}
     peerDependencies:
@@ -5574,8 +5574,8 @@ packages:
       swr-store: 0.10.6
       swrv: 1.0.4(vue@3.4.21)
       vue: 3.4.21(typescript@5.4.3)
-      zod: 3.22.4
-      zod-to-json-schema: 3.22.5(zod@3.22.4)
+      zod: 3.24.2
+      zod-to-json-schema: 3.22.5(zod@3.24.2)
     dev: false
 
   /ajv-formats@2.1.1(ajv@8.12.0):
@@ -9154,7 +9154,7 @@ packages:
       '@babel/parser': 7.26.3
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.6.2
+      semver: 7.6.3
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -10090,7 +10090,7 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
     dependencies:
-      semver: 7.6.2
+      semver: 7.6.3
     dev: true
 
   /make-error@1.3.6:
@@ -10875,7 +10875,7 @@ packages:
     resolution: {integrity: sha512-Dp+A9JWxRaKuHP35H77I4kCKesDy5HUDEmScia2FyncMTOXASMyg251F5PhFoDA5uqBrDDffiLpbqnrZmNXW+g==}
     engines: {node: '>=10'}
     dependencies:
-      semver: 7.6.2
+      semver: 7.6.3
     dev: false
 
   /node-abort-controller@3.1.1:
@@ -13215,7 +13215,6 @@ packages:
     resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
     engines: {node: '>=10'}
     hasBin: true
-    dev: true
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
@@ -15267,16 +15266,16 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zod-to-json-schema@3.22.5(zod@3.22.4):
+  /zod-to-json-schema@3.22.5(zod@3.24.2):
     resolution: {integrity: sha512-+akaPo6a0zpVCCseDed504KBJUQpEW5QZw7RMneNmKw+fGaML1Z9tUNLnHHAC8x6dzVRO1eB2oEMyZRnuBZg7Q==}
     peerDependencies:
       zod: ^3.22.4
     dependencies:
-      zod: 3.22.4
+      zod: 3.24.2
     dev: false
 
-  /zod@3.22.4:
-    resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
+  /zod@3.24.2:
+    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
     dev: false
 
   /zwitch@2.0.4:
