@@ -17,14 +17,26 @@ RUN npm install
 RUN npm run build
 
 # 最终镜像
-FROM node:20-bookworm
+FROM ubuntu/nginx
 
-# 更换为阿里云镜像源
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-# 安装 Node.js 和 supervisord
-RUN apk add --no-cache nginx supervisor
-# 安装 npm
-RUN apk add --no-cache npm
+# 设置环境变量，避免安装过程中出现交互提示
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 备份原始的 APT 源列表文件
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak
+
+# 替换 APT 源为阿里云源
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
+
+# 更新 APT 缓存
+RUN apt-get update
+
+# 安装 nginx 和 supervisor
+RUN apt-get install -y nodejs supervisor npm
+
+# 清理 APT 缓存以减小镜像大小
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -40,7 +52,7 @@ RUN cd backend && npm install --production
 
 # 安装 Playwright 及其浏览器
 RUN npm config set registry https://registry.npmmirror.com/
-RUN npx playwright install chromium
+RUN npx -y playwright@1.50.1 install chromium --with-deps
 
 # 启动 Chromium 时禁用沙盒
 RUN echo 'export CHROMIUM_FLAGS="--no-sandbox"' >> /etc/environment
