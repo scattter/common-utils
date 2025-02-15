@@ -12,6 +12,7 @@ export class FolderParamDto {
 
 export class DownloadParamDto {
   readonly files: IFileInfo[];
+  readonly baseUrl: string;
 }
 
 export class ValidParamDto {

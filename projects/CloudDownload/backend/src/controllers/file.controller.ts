@@ -24,7 +24,10 @@ export class FileController {
 
   @Post('/download')
   downloadFile(@Body() downloadParamDto: DownloadParamDto) {
-    return this.fileService.download(downloadParamDto.files);
+    return this.fileService.download(
+      downloadParamDto.files,
+      downloadParamDto.baseUrl,
+    );
   }
 
   @Post('/updateValid')

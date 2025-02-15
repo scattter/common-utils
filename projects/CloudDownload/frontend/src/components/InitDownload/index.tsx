@@ -20,6 +20,8 @@ import InfoCard from '../InfoCard';
 import { InputDialog } from '../InputDialog';
 import styles from './index.module.scss';
 
+const ROOT_PATH = '../download'
+
 const InitDownload: React.FC = () => {
   const [downloadUrl, setDownloadUrl] = useState<string>('');
   const [sharePwd, setSharePwd] = useState<string>('');
@@ -29,7 +31,7 @@ const InitDownload: React.FC = () => {
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [treeData, setTreeData] = useState<(IFileInfo & TreeDataNode)[]>([]);
   const [loadingText, setLoadingText] = useState<string>('');
-  const [baseUrl, setBaseUrl] = useState<string>('.');
+  const [baseUrl, setBaseUrl] = useState<string>(ROOT_PATH);
   const [curFolder, setCurFolder] = useState<IServerFolderInfo>({
     basePath: '',
     files: [],
@@ -240,7 +242,6 @@ const InitDownload: React.FC = () => {
       <div className={styles.fileWrapper}>
         <div className={styles.treeWrapper}>
           <Spin
-            style={{ height: '100%' }}
             spinning={isFinding}
             tip={loadingText}
           >
@@ -266,18 +267,19 @@ const InitDownload: React.FC = () => {
                 treeData={treeData as TreeDataNode[]}
               />
             ) : (
-              !isFinding && <Empty style={{ width: '100%', height: '100%' }} />
+              !isFinding && <div>
+                <Empty />
+              </div>
             )}
           </Spin>
         </div>
         <div className={styles.operationWrapper}>
           <div className={styles.content}>
             <div className={styles.folderWrapper}>
-              {/*<div className={styles.title}>想要下载到</div>*/}
               <div className={styles.curPath}>
-                <span>{`下载路径: ${curFolder.basePath}`}</span>
+                <span>{`下载路径: ${curFolder.basePath.replace(ROOT_PATH, '/')}`}</span>
                 <Button
-                  disabled={baseUrl === '.'}
+                  disabled={baseUrl === ROOT_PATH}
                   type="link"
                   onClick={() => {
                     setBaseUrl((prevState) => {
@@ -320,7 +322,7 @@ const InitDownload: React.FC = () => {
               // disabled={checkedKeys.length === 0}
               type="primary"
               onClick={() => {
-                axios.post('file/download', { files: checkedTree });
+                axios.post('file/download', { files: checkedTree, baseUrl });
               }}
             >
               下载

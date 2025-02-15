@@ -43,10 +43,10 @@ export class FileService {
     return queryFolderInfo(folderParam.baseUrl);
   }
 
-  async download(downloadParam: IFileInfo[]) {
+  async download(downloadParam: IFileInfo[], baseUrl: string) {
     this.playwrightService
       .checkLogin()
-      .then(() => this.playwrightService.downloadFile(downloadParam));
+      .then(() => this.playwrightService.downloadFile(downloadParam, baseUrl));
     return {};
   }
 

@@ -152,7 +152,11 @@ export class PlaywrightService {
     await downloadBtn.click();
   }
 
-  async downloadFile(data: IFileInfo[], isRoot: boolean = true) {
+  async downloadFile(
+    data: IFileInfo[],
+    baseUrl: string,
+    isRoot: boolean = true,
+  ) {
     if (!this.curPage) return;
     const fileInfosLocator = this.curPage.locator('.file-right');
     const allLocator = await fileInfosLocator.all();
@@ -166,7 +170,7 @@ export class PlaywrightService {
         // 进入文件夹内部
         await locator.click();
         await this.curPage.waitForTimeout(PS_PAGE_WAIT_TIME);
-        await this.downloadFile(item.children, false);
+        await this.downloadFile(item.children, baseUrl, false);
       } else if (item.checked) {
         // 文件后面选中组件
         const fileBtn = locator.locator('.file-right-icon-wrap');
@@ -198,7 +202,7 @@ export class PlaywrightService {
             },
           });
           try {
-            await handleDownload(fileDownloadUrl, '.', (event) =>
+            await handleDownload(fileDownloadUrl, baseUrl, (event) =>
               this.showDownloadInfo(event, this.sseService, title),
             );
           } catch {
