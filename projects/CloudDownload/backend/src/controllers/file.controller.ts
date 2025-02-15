@@ -22,6 +22,11 @@ export class FileController {
     return this.fileService.queryAllFolder(folderParamDto);
   }
 
+  @Post('/createFolder')
+  createFolder(@Body() folderParamDto: FolderParamDto) {
+    return this.fileService.createFolder(folderParamDto.baseUrl);
+  }
+
   @Post('/download')
   downloadFile(@Body() downloadParamDto: DownloadParamDto) {
     return this.fileService.download(

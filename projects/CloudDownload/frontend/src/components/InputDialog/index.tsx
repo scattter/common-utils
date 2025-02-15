@@ -9,8 +9,8 @@ let inputDialog: ReactDOM.Root | null = null;
 interface IProps {
   visible: boolean;
   title: string;
-  onOk: (val: string) => Promise<void>;
-  onClose: (isInitiative?: boolean) => Promise<void>;
+  onOk: (val: string) => Promise<unknown>;
+  onClose?: (isInitiative?: boolean) => Promise<void>;
 }
 
 export const InputDialog: React.FC<IProps> & {
@@ -36,7 +36,7 @@ export const InputDialog: React.FC<IProps> & {
   const handleCancel = useCallback(
     (isInitiative = true) => {
       setOpen(false);
-      onClose(isInitiative);
+      onClose?.(isInitiative);
     },
     [onClose],
   );
@@ -70,7 +70,7 @@ InputDialog.open = (props: Omit<IProps, 'visible'>) => {
     document.body.appendChild(mount);
     inputDialog = ReactDOM.createRoot(mount);
     const onClose = (isInitiative = true) => {
-      return isInitiative
+      return isInitiative && props.onClose
         ? props.onClose().then(() => {
             setTimeout(() => {
               InputDialog.close?.();

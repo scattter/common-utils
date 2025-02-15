@@ -11,6 +11,7 @@ import { SseService } from './sse.service';
 import { SSE_EVENT } from '../enums/sse';
 import { queryFolderInfo } from '../utils/queryFolder';
 import { LoggerService } from './logger.service';
+import { createFolder } from 'src/utils/addFolder';
 
 @Injectable()
 export class FileService {
@@ -41,6 +42,15 @@ export class FileService {
 
   async queryAllFolder(folderParam: IFolderParam): Promise<IFolderInfo> {
     return queryFolderInfo(folderParam.baseUrl);
+  }
+
+  /**
+   * 新建文件夹
+   * @param dirPath 文件夹路径
+   * @returns 返回创建结果（成功或失败）
+   */
+  createFolder(dirPath: string) {
+    return createFolder(dirPath);
   }
 
   async download(downloadParam: IFileInfo[], baseUrl: string) {

@@ -44,6 +44,8 @@ WORKDIR /app
 COPY --from=frontend-builder /app/frontend/dist /usr/share/nginx/html
 # 复制 Nginx 配置文件
 COPY --from=frontend-builder /app/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+# 复制 download 文件夹
+COPY download /app
 
 # 复制 NestJS 构建产物和依赖
 COPY --from=backend-builder /app/backend/package*.json ./backend/

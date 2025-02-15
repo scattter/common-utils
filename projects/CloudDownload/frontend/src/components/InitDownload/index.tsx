@@ -1,6 +1,5 @@
 import {
   Button,
-  Divider,
   Empty,
   Input,
   Progress,
@@ -15,12 +14,11 @@ import type React from 'react';
 import { useMemo } from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { SSE_EVENT, VALID_INFO_TYPE } from '../../enums';
-import type { IFileInfo, IServerFolderInfo } from '../../interfaces';
+import type { IFileInfo } from '../../interfaces';
+import FolderInfo from '../FolderInfo';
 import InfoCard from '../InfoCard';
 import { InputDialog } from '../InputDialog';
 import styles from './index.module.scss';
-
-const ROOT_PATH = '../download'
 
 const InitDownload: React.FC = () => {
   const [downloadUrl, setDownloadUrl] = useState<string>('');
@@ -31,11 +29,6 @@ const InitDownload: React.FC = () => {
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
   const [treeData, setTreeData] = useState<(IFileInfo & TreeDataNode)[]>([]);
   const [loadingText, setLoadingText] = useState<string>('');
-  const [baseUrl, setBaseUrl] = useState<string>(ROOT_PATH);
-  const [curFolder, setCurFolder] = useState<IServerFolderInfo>({
-    basePath: '',
-    files: [],
-  });
   const [downloadContent, setDownloadContent] = useState<
     {
       title: string;
@@ -84,17 +77,6 @@ const InitDownload: React.FC = () => {
         setLoadingText('');
       });
   }, [downloadUrl, sharePwd]);
-
-  const handleQueryFolder = useCallback(() => {
-    axios
-      .post('/file/folder', { baseUrl })
-      .then((res) => {
-        setCurFolder(res.data);
-      })
-      .finally(() => {
-        // setIsFinding(false);
-      });
-  }, [baseUrl]);
 
   useEffect(() => {
     const eventSource = new EventSource('/sse');
@@ -211,10 +193,6 @@ const InitDownload: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    handleQueryFolder();
-  }, [handleQueryFolder]);
-
   return (
     <div className={styles.initWrapper}>
       <div className={styles.infoWrapper}>
@@ -232,6 +210,7 @@ const InitDownload: React.FC = () => {
         />
         <Button
           style={{ width: '20%' }}
+          disabled={!downloadUrl}
           type="primary"
           loading={isFinding}
           onClick={handleParseUrl}
@@ -241,10 +220,7 @@ const InitDownload: React.FC = () => {
       </div>
       <div className={styles.fileWrapper}>
         <div className={styles.treeWrapper}>
-          <Spin
-            spinning={isFinding}
-            tip={loadingText}
-          >
+          <Spin spinning={isFinding} tip={loadingText}>
             {treeData.length > 0 ? (
               <Tree
                 rootStyle={{
@@ -267,66 +243,17 @@ const InitDownload: React.FC = () => {
                 treeData={treeData as TreeDataNode[]}
               />
             ) : (
-              !isFinding && <div>
-                <Empty />
-              </div>
+              !isFinding && (
+                <div>
+                  <Empty />
+                </div>
+              )
             )}
           </Spin>
         </div>
         <div className={styles.operationWrapper}>
           <div className={styles.content}>
-            <div className={styles.folderWrapper}>
-              <div className={styles.curPath}>
-                <span>{`下载路径: ${curFolder.basePath.replace(ROOT_PATH, '/')}`}</span>
-                <Button
-                  disabled={baseUrl === ROOT_PATH}
-                  type="link"
-                  onClick={() => {
-                    setBaseUrl((prevState) => {
-                      const ls = prevState.split('/');
-                      ls.pop();
-                      return ls.join('/');
-                    });
-                  }}
-                >
-                  返回上一级
-                </Button>
-              </div>
-              <Divider style={{ margin: '6px 0' }} />
-              <div className={styles.folderDetail}>
-                {curFolder.files.map((file) => {
-                  return (
-                    <div key={`${file.name}-${file.isDirectory}`}>
-                      {file.isDirectory ? (
-                        <Button
-                          style={{ fontSize: 16 }}
-                          type={'link'}
-                          onClick={() =>
-                            setBaseUrl(
-                              (prevUrl) =>
-                                `${prevUrl}${prevUrl.endsWith('/') ? '' : '/'}${file.name}`,
-                            )
-                          }
-                        >
-                          {file.name}
-                        </Button>
-                      ) : (
-                        <div style={{ paddingLeft: 16 }}>{file.name}</div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-            <Button
-              // disabled={checkedKeys.length === 0}
-              type="primary"
-              onClick={() => {
-                axios.post('file/download', { files: checkedTree, baseUrl });
-              }}
-            >
-              下载
-            </Button>
+            <FolderInfo checkedTree={checkedTree} />
           </div>
           <div className={styles.processWrapper}>
             <InfoCard

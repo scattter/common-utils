@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosProgressEvent } from 'axios';
+import axios, { AxiosProgressEvent } from 'axios';
 import * as fs from 'fs';
 
 export const handleDownload = async (

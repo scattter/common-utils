@@ -14,7 +14,6 @@ export enum SSE_EVENT {
   FINISH = 'finish',
 }
 
-
 export enum VALID_INFO_TYPE {
   PHONE = 'phone',
   SMS_CODE = 'smsCode',
