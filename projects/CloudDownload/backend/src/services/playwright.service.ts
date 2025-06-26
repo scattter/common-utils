@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { IFileInfo } from '../interfaces/file';
 import { chromium, devices, Locator, Page } from 'playwright';
 import { FILE_CATEGORY, VALID_INFO_TYPE } from '../enums/file';
@@ -14,7 +14,7 @@ import { sseEventMap } from '../utils/chineseMap';
 import { AxiosProgressEvent } from 'axios';
 import { handleDownload } from '../utils/sseFileDown';
 import * as fs from 'fs';
-import { LoggerService } from './logger.service';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class PlaywrightService {
@@ -36,12 +36,14 @@ export class PlaywrightService {
 
   constructor(
     private readonly sseService: SseService,
-    private readonly logger: LoggerService,
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: Logger,
   ) {}
 
   async init(downloadUrl: string, sharePwd?: string) {
     this.downloadUrl = downloadUrl;
     this.sharePwd = sharePwd;
+    this.logger.log('playwright start init', PlaywrightService.name);
     if (this.curPage) {
       await this.curPage.goto(this.downloadUrl, {
         waitUntil: 'domcontentloaded',
@@ -55,25 +57,28 @@ export class PlaywrightService {
         const browser = await chromium.launch({
           headless: true,
         });
+        this.logger.log('browser launch', PlaywrightService.name);
         const s9 = devices['Galaxy S9+'];
         const context = await browser.newContext({
           ...s9,
         });
         const page = await context.newPage();
+        this.logger.log('page created', PlaywrightService.name);
         let cookies = [];
         try {
           cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8')) ?? {};
         } catch (err) {
-          this.logger.error(err);
+          this.logger.error(err, PlaywrightService.name);
         }
         await page.context().addCookies(cookies);
         await page.goto(this.downloadUrl, { waitUntil: 'domcontentloaded' });
+        this.logger.log('goto target page', PlaywrightService.name);
         this.curPage = page;
         if (this.sharePwd) {
           await this.handleSharePwd();
         }
       } catch (e) {
-        this.logger.error(e);
+        this.logger.error(e, PlaywrightService.name);
       }
     }
   }
@@ -93,11 +98,13 @@ export class PlaywrightService {
 
   async queryAllFiles() {
     const result: IFileInfo[] = [];
+    this.logger.log('start query all files', PlaywrightService.name);
     await this.findAllFile(this.curPage, result, true);
     return result;
   }
 
   async findAllFile(page: Page, data: IFileInfo[], isRoot?: boolean) {
+    this.logger.log('start find all file', PlaywrightService.name);
     const response = await page.waitForResponse(/listShareDir/, {
       timeout: PS_RESPONSE_WAIT_TIME,
     });
@@ -222,6 +229,7 @@ export class PlaywrightService {
   }
 
   async checkLogin() {
+    this.logger.log('check login', PlaywrightService.name);
     try {
       if (!this.curPage) return;
       // 通过点击下载按钮来判断是否登录
@@ -274,9 +282,10 @@ export class PlaywrightService {
         await this.curPage.reload({ waitUntil: 'domcontentloaded' });
         await this.curPage.waitForTimeout(PS_RESPONSE_WAIT_TIME);
       }
+      this.logger.log('has login', PlaywrightService.name);
       return Promise.resolve('');
     } catch (err) {
-      console.log(err);
+      this.logger.error(err, PlaywrightService.name);
       return Promise.reject('error');
     }
   }
@@ -367,6 +376,7 @@ export class PlaywrightService {
           },
         });
       } else {
+        this.logger.log('finish down', PlaywrightService.name);
         this.sseService.sendMessage({
           type: SSE_EVENT.PHASE_FINISH,
           data: {
@@ -395,6 +405,7 @@ export class PlaywrightService {
     handleDownload(url, '.', (event) =>
       this.showDownloadInfo(event, this.sseService, '99'),
     ).catch((e) => {
+      this.logger.error(e, PlaywrightService.name);
       this.sseService.sendMessage({
         type: SSE_EVENT.PHASE_ERROR,
         data: {
